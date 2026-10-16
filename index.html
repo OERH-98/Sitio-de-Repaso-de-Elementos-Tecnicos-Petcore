@@ -1,0 +1,1051 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Guía técnica PetCore</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;700;800&family=Source+Sans+3:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Concepto: guía de estudio con barra lateral fija, secciones tipo "manual" y un banco de preguntas filtrable.
+   Paleta: azul PetCore (identidad del producto), ámbar para lo que se debe recordar, verde para "dominada". */
+:root {
+  --bg: #F4F6FB;
+  --surface: #FFFFFF;
+  --surface-2: #EEF2FA;
+  --ink: #14203A;
+  --muted: #55627A;
+  --line: #D8E0EE;
+  --accent: #1D4E9E;
+  --accent-ink: #FFFFFF;
+  --accent-soft: #E3ECFB;
+  --recuerda-bg: #FFF4DB;
+  --recuerda-line: #E7C36A;
+  --recuerda-ink: #5A3E00;
+  --ok: #1B7A4B;
+  --ok-soft: #DDF3E6;
+  --n1: #1B7A4B;
+  --n2: #A15C00;
+  --n3: #B3261E;
+  --code-bg: #0F1A33;
+  --code-ink: #E6ECFA;
+  --code-key: #8FB8FF;
+  --font-display: "Plus Jakarta Sans", "Segoe UI", system-ui, sans-serif;
+  --font-body: "Source Sans 3", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0C1220; --surface: #141C2E; --surface-2: #1A2540; --ink: #E7ECF8; --muted: #9AA7C2;
+    --line: #27334F; --accent: #7FB0FF; --accent-ink: #0C1220; --accent-soft: #1B2B4C;
+    --recuerda-bg: #2E2410; --recuerda-line: #6B5420; --recuerda-ink: #F3D58C;
+    --ok: #55D191; --ok-soft: #12301F; --n1: #55D191; --n2: #F0B45A; --n3: #FF8B82;
+    --code-bg: #0A1226; --code-ink: #E6ECFA; --code-key: #8FB8FF; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0C1220; --surface: #141C2E; --surface-2: #1A2540; --ink: #E7ECF8; --muted: #9AA7C2;
+  --line: #27334F; --accent: #7FB0FF; --accent-ink: #0C1220; --accent-soft: #1B2B4C;
+  --recuerda-bg: #2E2410; --recuerda-line: #6B5420; --recuerda-ink: #F3D58C;
+  --ok: #55D191; --ok-soft: #12301F; --n1: #55D191; --n2: #F0B45A; --n3: #FF8B82;
+  --code-bg: #0A1226; --code-ink: #E6ECFA; --code-key: #8FB8FF; color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 84px; }
+body {
+  background: var(--bg); color: var(--ink);
+  font-family: var(--font-body); font-size: 17px; line-height: 1.6;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 0 48px;
+}
+h1, h2, h3 { font-family: var(--font-display); line-height: 1.2; text-wrap: balance; margin: 0; }
+p { margin: 0 0 12px; }
+a { color: var(--accent); }
+code { font-family: var(--font-mono); font-size: .88em; background: var(--surface-2); padding: 1px 6px; border-radius: 5px; overflow-wrap: anywhere; }
+pre { margin: 0 0 14px; background: var(--code-bg); color: var(--code-ink); padding: 14px 16px; border-radius: 10px; overflow-x: auto; font-family: var(--font-mono); font-size: 13.5px; line-height: 1.55; max-width: 100%; }
+pre code { background: none; padding: 0; color: inherit; font-size: inherit; overflow-wrap: normal; }
+.k { color: var(--code-key); }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+
+/* barra superior */
+.top {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20;
+  background: var(--bg); border-bottom: 1px solid var(--line);
+  margin-inline: calc(-1 * max(16px, env(safe-area-inset-left, 0px)));
+  padding: 10px max(16px, env(safe-area-inset-right, 0px)) 10px max(16px, env(safe-area-inset-left, 0px));
+  display: flex; gap: 12px; align-items: center; flex-wrap: wrap;
+}
+.marca { font-family: var(--font-display); font-weight: 800; font-size: 18px; margin-right: auto; display: flex; align-items: center; gap: 10px; }
+.marca i { width: 28px; height: 28px; border-radius: 8px; background: var(--accent); display: inline-block; position: relative; }
+.marca i::after { content: ""; position: absolute; inset: 7px; border: 2.5px solid var(--accent-ink); border-radius: 50%; }
+.progreso { font-size: 14px; color: var(--muted); display: flex; align-items: center; gap: 8px; }
+.barra { width: 120px; height: 8px; background: var(--surface-2); border-radius: 99px; overflow: hidden; border: 1px solid var(--line); }
+.barra b { display: block; height: 100%; width: 0; background: var(--ok); transition: width .3s; }
+button, select, input[type="search"] { font: inherit; color: inherit; }
+.btn { border: 1px solid var(--line); background: var(--surface); padding: 6px 12px; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 500; }
+.btn:hover { border-color: var(--accent); }
+.btn.primario { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+
+/* estructura */
+.marco { max-width: 1240px; margin: 0 auto; display: grid; grid-template-columns: 250px minmax(0, 1fr); gap: 36px; padding-top: 24px; }
+.indice { position: sticky; top: 84px; align-self: start; max-height: calc(100vh - 100px); overflow-y: auto; font-size: 15px; }
+.indice h2 { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+.indice a { display: block; padding: 6px 10px; border-radius: 8px; text-decoration: none; color: var(--ink); }
+.indice a:hover { background: var(--accent-soft); }
+.indice a.actual { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+main { min-width: 0; }
+
+.hero { padding: 8px 0 28px; }
+.hero h1 { font-size: clamp(28px, 4.2vw, 44px); font-weight: 800; margin-bottom: 14px; }
+.hero p { font-size: 19px; color: var(--muted); max-width: 62ch; }
+.rutas { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 12px; margin-top: 20px; }
+.ruta { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; text-decoration: none; color: var(--ink); }
+.ruta b { font-family: var(--font-display); display: block; margin-bottom: 2px; }
+.ruta span { color: var(--muted); font-size: 15px; }
+.ruta:hover { border-color: var(--accent); }
+
+section.tema { padding: 36px 0 12px; border-top: 1px solid var(--line); }
+section.tema > h2 { font-size: clamp(23px, 3vw, 30px); margin-bottom: 8px; }
+.etiqueta { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); font-weight: 600; margin-bottom: 6px; display: block; }
+.lead { font-size: 18.5px; color: var(--ink); max-width: 68ch; }
+h3 { font-size: 19px; margin: 24px 0 10px; }
+ul, ol { margin: 0 0 14px; padding-left: 22px; }
+li { margin-bottom: 6px; }
+li::marker { color: var(--accent); }
+
+.tabla { overflow-x: auto; margin: 0 0 16px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
+table { border-collapse: collapse; width: 100%; font-size: 15.5px; }
+th, td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { background: var(--surface-2); font-family: var(--font-display); font-size: 13.5px; }
+tr:last-child td { border-bottom: 0; }
+
+.recuerda { background: var(--recuerda-bg); border: 1px solid var(--recuerda-line); color: var(--recuerda-ink); border-radius: 10px; padding: 12px 16px; margin: 6px 0 16px; }
+.recuerda strong { font-family: var(--font-display); }
+
+.flujo { display: flex; flex-wrap: wrap; gap: 8px; align-items: stretch; margin: 6px 0 18px; }
+.paso { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 9px 12px; font-size: 15px; min-width: 0; flex: 1 1 150px; }
+.paso small { display: block; color: var(--muted); font-size: 13px; }
+.paso b { font-family: var(--font-display); }
+.flecha { align-self: center; color: var(--accent); font-weight: 800; }
+
+.dos { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; margin: 0 0 16px; }
+.caja { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; min-width: 0; }
+.caja h4 { margin: 0 0 6px; font-family: var(--font-display); font-size: 16px; }
+.caja p:last-child, .caja ul:last-child { margin-bottom: 0; }
+
+/* banco de preguntas */
+.filtros { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 14px; display: flex; flex-direction: column; gap: 12px; margin: 14px 0 18px; }
+.fila { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+input[type="search"] { flex: 1 1 240px; min-width: 0; background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; }
+.chips { display: flex; gap: 6px; flex-wrap: wrap; }
+.chip { border: 1px solid var(--line); background: var(--bg); border-radius: 99px; padding: 4px 12px; font-size: 14px; cursor: pointer; }
+.chip[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.contador { color: var(--muted); font-size: 14px; }
+
+details.q { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; margin-bottom: 10px; }
+details.q[open] { border-color: var(--accent); }
+details.q.dominada { border-left: 5px solid var(--ok); }
+details.q summary { list-style: none; cursor: pointer; padding: 14px 16px; display: flex; gap: 12px; align-items: flex-start; }
+details.q summary::-webkit-details-marker { display: none; }
+details.q summary::after { content: "+"; margin-left: auto; font-weight: 800; color: var(--accent); font-size: 20px; line-height: 1; }
+details.q[open] summary::after { content: "–"; }
+.qtxt { font-weight: 600; min-width: 0; }
+.nivel { flex: none; font-size: 12px; font-weight: 700; padding: 2px 8px; border-radius: 99px; border: 1px solid currentColor; margin-top: 2px; white-space: nowrap; }
+.nivel.n1 { color: var(--n1); } .nivel.n2 { color: var(--n2); } .nivel.n3 { color: var(--n3); }
+.tema-tag { display: block; font-size: 12.5px; color: var(--muted); font-weight: 500; margin-top: 2px; }
+.resp { padding: 0 16px 14px 16px; border-top: 1px dashed var(--line); margin: 0 0 0; padding-top: 12px; }
+.resp > *:last-child { margin-bottom: 0; }
+.pie-q { display: flex; gap: 10px; align-items: center; margin-top: 12px; flex-wrap: wrap; }
+.vacio { text-align: center; color: var(--muted); padding: 30px 10px; }
+
+.glosario { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 10px; }
+.glosario div { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 10px 14px; }
+.glosario dt { font-family: var(--font-display); font-weight: 700; }
+.glosario dd { margin: 2px 0 0; color: var(--muted); font-size: 15.5px; }
+
+@media (max-width: 920px) {
+  .marco { grid-template-columns: minmax(0, 1fr); gap: 0; }
+  .indice { position: static; max-height: none; display: flex; gap: 6px; overflow-x: auto; padding-bottom: 8px; border-bottom: 1px solid var(--line); }
+  .indice h2 { display: none; }
+  .indice a { white-space: nowrap; border: 1px solid var(--line); background: var(--surface); }
+  .progreso .barra { width: 70px; }
+}
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } .barra b { transition: none; } }
+</style>
+
+</head>
+<body>
+<header class="top">
+  <div class="marca"><i aria-hidden="true"></i><span>Guía técnica PetCore</span></div>
+  <div class="progreso" aria-live="polite"><span id="progresoTexto">0 de 0 dominadas</span><span class="barra"><b id="progresoBarra"></b></span></div>
+  <button class="btn" id="btnTema" type="button" aria-label="Cambiar tema">Tema: auto</button>
+</header>
+
+<div class="marco">
+  <nav class="indice" aria-label="Índice">
+    <h2>Contenido</h2>
+    <a href="#mapa">1 · El mapa del sistema</a>
+    <a href="#flujo">2 · Cómo viaja un dato</a>
+    <a href="#sesion">3 · Sesión: cookie y JWT</a>
+    <a href="#recuperacion">4 · Recuperar contraseña</a>
+    <a href="#google">5 · Inicio con Google</a>
+    <a href="#errores">6 · Excepciones y errores</a>
+    <a href="#websocket">7 · WebSocket</a>
+    <a href="#push">8 · Notificaciones push</a>
+    <a href="#async">9 · Asincronía y pools</a>
+    <a href="#rendimiento">10 · Rendimiento y N+1</a>
+    <a href="#ios">11 · App híbrida e iOS</a>
+    <a href="#concurrencia">12 · Concurrencia</a>
+    <a href="#glosario">13 · Glosario</a>
+    <a href="#preguntas">14 · Banco de preguntas</a>
+  </nav>
+
+  <main>
+    <div class="hero">
+      <span class="etiqueta">Material de estudio del equipo</span>
+      <h1>Cómo funciona PetCore por dentro</h1>
+      <p>Cada tema se explica con palabras sencillas, con las piezas reales del código y, al final, con un banco de preguntas difíciles y su respuesta. Léelo en orden o salta al banco para ponerte a prueba.</p>
+      <div class="rutas">
+        <a class="ruta" href="#mapa"><b>Si eres nuevo</b><span>Empieza por el mapa y el recorrido de un dato.</span></a>
+        <a class="ruta" href="#sesion"><b>Seguridad</b><span>Sesión, recuperación y Google.</span></a>
+        <a class="ruta" href="#rendimiento"><b>Rendimiento</b><span>Pools, asincronía y N+1.</span></a>
+        <a class="ruta" href="#preguntas"><b>Ponte a prueba</b><span>Preguntas con respuesta, por nivel.</span></a>
+      </div>
+    </div>
+
+    <!-- 1 -->
+    <section class="tema" id="mapa">
+      <span class="etiqueta">Tema 1</span>
+      <h2>El mapa del sistema</h2>
+      <p class="lead">PetCore es un sistema de gestión para una clínica veterinaria. Tiene cuatro piezas que comparten los mismos datos: una API, un portal web para el personal, una app móvil para los dueños de mascotas y una base de datos Oracle.</p>
+      <div class="tabla"><table>
+        <tr><th>Pieza</th><th>Tecnología</th><th>Quién la usa</th></tr>
+        <tr><td><strong>API</strong></td><td>Spring Boot (Java 17), 51 módulos, desplegada en un dyno Eco de Heroku</td><td>Todo lo demás</td></tr>
+        <tr><td><strong>Portal web</strong></td><td>JavaScript con módulos ES, Bootstrap y SweetAlert2</td><td>Administrador, Veterinario, Recepcionista y Farmacéutico</td></tr>
+        <tr><td><strong>App híbrida</strong></td><td>Capacitor (Android e iOS) con HTML y JavaScript</td><td>Propietarios de mascotas</td></tr>
+        <tr><td><strong>Base de datos</strong></td><td>Oracle: 51 tablas y 17 triggers</td><td>Guarda los datos y hace cumplir reglas (stock, capacidad, turnos, IVA)</td></tr>
+      </table></div>
+      <h3>Dos canales entre el cliente y la API</h3>
+      <div class="dos">
+        <div class="caja"><h4>REST (pedir y guardar)</h4><p>El cliente pregunta con <code>fetch</code> y la API responde con JSON. Es la vía para leer, crear, editar y borrar.</p></div>
+        <div class="caja"><h4>WebSocket (avisar)</h4><p>La API empuja un aviso corto cuando algo cambia. La pantalla vuelve a pedir los datos por REST.</p></div>
+      </div>
+      <div class="recuerda"><strong>Para recordar.</strong> El sistema es un solo proceso, sin balanceador. Muchas decisiones (códigos en memoria, sesiones de WebSocket en memoria, pools pequeños) salen de ese hecho.</div>
+    </section>
+
+    <!-- 2 -->
+    <section class="tema" id="flujo">
+      <span class="etiqueta">Tema 2</span>
+      <h2>Cómo viaja un dato entre el frontend y la API</h2>
+      <p class="lead">Ninguna pantalla llama a la API directamente. Cada módulo tiene un archivo de servicio (<code>services/*_service.js</code>) que arma la URL, el método y el cuerpo. Por debajo, un <code>fetch</code> parcheado se ocupa de lo repetitivo.</p>
+      <h3>El recorrido completo</h3>
+      <div class="flujo">
+        <div class="paso"><b>Pantalla</b><small>llama a un servicio</small></div><span class="flecha">→</span>
+        <div class="paso"><b>Servicio JS</b><small>arma URL y cuerpo</small></div><span class="flecha">→</span>
+        <div class="paso"><b>fetch parcheado</b><small>cookie, reintentos, desenvolver</small></div><span class="flecha">→</span>
+        <div class="paso"><b>Spring Security</b><small>CORS, JWT, rol</small></div><span class="flecha">→</span>
+        <div class="paso"><b>Controller</b><small>valida el DTO</small></div><span class="flecha">→</span>
+        <div class="paso"><b>Service</b><small>reglas y transacción</small></div><span class="flecha">→</span>
+        <div class="paso"><b>Repository</b><small>consulta a Oracle</small></div>
+      </div>
+      <h3>Las capas de cada módulo</h3>
+      <div class="tabla"><table>
+        <tr><th>Capa</th><th>Para qué sirve</th></tr>
+        <tr><td><strong>Controller</strong></td><td>Define la URL y el método. Recibe el JSON y lo valida con <code>@Valid</code>.</td></tr>
+        <tr><td><strong>DTO</strong></td><td>Lo que viaja por la red, con sus reglas (<code>@NotNull</code>, <code>@Size</code>, <code>@Pattern</code>).</td></tr>
+        <tr><td><strong>Service</strong></td><td>Reglas de negocio y transacciones. Convierte entre entidad y DTO.</td></tr>
+        <tr><td><strong>Repository</strong></td><td>Consultas JPA y JPQL a Oracle.</td></tr>
+        <tr><td><strong>Entity</strong></td><td>La fila de la tabla, con sus relaciones.</td></tr>
+      </table></div>
+      <h3>Cómo se envían las solicitudes</h3>
+      <div class="tabla"><table>
+        <tr><th>Qué se hace</th><th>Cómo</th></tr>
+        <tr><td>Leer</td><td><code>GET</code> con la ruta y los parámetros (<code>?texto=&amp;page=&amp;size=</code>)</td></tr>
+        <tr><td>Crear</td><td><code>POST</code> con <code>Content-Type: application/json</code></td></tr>
+        <tr><td>Editar</td><td><code>PUT</code> (completo) o <code>PATCH</code> (parcial) a <code>/{id}</code></td></tr>
+        <tr><td>Eliminar</td><td><code>DELETE /{id}</code></td></tr>
+        <tr><td>Con imagen</td><td>Multipart: un <code>FormData</code> con la parte <code>config</code> (JSON) y la parte <code>foto</code> (archivo)</td></tr>
+      </table></div>
+      <h3>El formato de las respuestas</h3>
+      <pre><code>// Éxito
+{ "success": true, "message": "Consulta realizada correctamente", "data": { ... } }
+
+// Error
+{ "timestamp": "...", "status": 409, "error": "Conflict",
+  "message": "...", "path": "/api/compras", "details": { "campo": "ERR01: ..." } }</code></pre>
+      <h3>Lo que hace el fetch parcheado</h3>
+      <ul>
+        <li><strong>Agrega <code>credentials: "include"</code></strong> para que el navegador mande la cookie de sesión a otro dominio.</li>
+        <li><strong>Desenvuelve la respuesta:</strong> los servicios reciben directamente <code>data</code>, no el sobre completo.</li>
+        <li><strong>Reintenta solo las lecturas</strong> (GET y HEAD) si Heroku está despertando: hasta 4 veces, esperando 1,5 · 3 · 5 · 8 segundos.</li>
+        <li><strong>Cierra la sesión</strong> si una llamada devuelve 401 o 403 fuera de <code>/api/auth/</code>.</li>
+        <li><strong>Detecta la API caída</strong> y manda a la pantalla de carga, que decide si va a la página 503.</li>
+      </ul>
+      <h3>Paginación segura</h3>
+      <p>Cualquier listado paginado pasa por <code>PaginacionUtils.de(page, size)</code>: la página nunca es negativa y el tamaño se fuerza entre 5 y 50 (10 por defecto). Así nadie puede pedir <code>size=99999</code> y convertir la consulta en un «traeme todo».</p>
+      <div class="recuerda"><strong>Para recordar.</strong> Un servicio puede pedir <code>await respuesta.json()</code> y recibir el dato listo gracias al parche; los errores no vienen desenvueltos porque tienen otro formato.</div>
+    </section>
+
+    <!-- 3 -->
+    <section class="tema" id="sesion">
+      <span class="etiqueta">Tema 3</span>
+      <h2>Sesión: cookie y JWT</h2>
+      <p class="lead">La sesión vive en una cookie <code>httpOnly</code> que contiene un JWT. La API es quien la emite; el JavaScript del navegador nunca la puede leer, solo el navegador la manda de vuelta.</p>
+      <h3>Dos relojes distintos</h3>
+      <div class="tabla"><table>
+        <tr><th>Reloj</th><th>Dónde vive</th><th>Valor</th><th>¿Se renueva?</th></tr>
+        <tr><td><strong>Cookie (Max-Age)</strong></td><td>Navegador</td><td>15 minutos</td><td>Sí, en cada petición</td></tr>
+        <tr><td><strong>JWT (exp)</strong></td><td>Dentro del token firmado</td><td>24 horas</td><td>No, nunca</td></tr>
+      </table></div>
+      <p>La cookie es el envoltorio y el JWT es la carta. Renovar el envoltorio no cambia la fecha de la carta.</p>
+      <h3>Quién emite qué</h3>
+      <div class="tabla"><table>
+        <tr><th>Emisor</th><th>Cuándo</th><th>Qué hace</th></tr>
+        <tr><td><code>AuthController</code></td><td>Al iniciar sesión</td><td>Crea un JWT nuevo y lo pone en la cookie con Max-Age de 900 segundos.</td></tr>
+        <tr><td><code>JwtCookieAuthFilter</code></td><td>En cada petición con sesión válida</td><td>Reenvía el mismo JWT en una cookie con Max-Age de 900 segundos otra vez.</td></tr>
+      </table></div>
+      <h3>Las cookies y sus atributos</h3>
+      <ul>
+        <li><code>authToken</code> para empleados y <code>authTokenPropietario</code> para propietarios: las dos sesiones pueden convivir.</li>
+        <li><code>HttpOnly</code>, <code>Path=/</code>, y <code>Secure</code> y <code>SameSite</code> según el entorno (en producción <code>None</code> y <code>Secure</code>, porque el frontend y la API están en dominios distintos).</li>
+        <li>El JWT lleva <code>id</code>, <code>rol</code>, <code>tipo</code>, <code>sub</code> (correo) y <code>iss</code>, firmado con HS256.</li>
+      </ul>
+      <h3>Línea de tiempo de una sesión</h3>
+      <pre><code><span class="k">00:00</span>  Login            → cookie vive hasta 00:15
+<span class="k">00:10</span>  Petición         → cookie renovada, ahora vive hasta 00:25
+<span class="k">00:24</span>  Petición         → renovada, vive hasta 00:39
+<span class="k">00:39 → 00:54</span>  sin peticiones   → el navegador BORRA la cookie
+<span class="k">00:55</span>  Petición         → no viaja cookie → 401 "No autenticado"
+<span class="k">24:00</span>  Aunque haya actividad, el JWT caduca → 401 "Token expirado"</code></pre>
+      <h3>Cómo sabe el frontend quién es</h3>
+      <p>Como el JavaScript no puede leer la cookie, pregunta a la API: <code>GET /api/auth/me/empleado</code> o <code>/me/propietario</code>. Cada variante lee su propia cookie e ignora la otra.</p>
+      <h3>Cierre de sesión</h3>
+      <p><code>POST /api/auth/logout</code> responde con las dos cookies en <code>Max-Age=0</code> y los mismos atributos con que se crearon; si no coinciden, el navegador no las borra.</p>
+      <div class="recuerda"><strong>Para recordar.</strong> Los 15 minutos significan «15 minutos sin ninguna petición al servidor». Las pantallas se refrescan solas por WebSocket, así que mientras la página esté abierta la cookie se mantiene. El tope absoluto es el JWT de 24 horas.</div>
+    </section>
+
+    <!-- 4 -->
+    <section class="tema" id="recuperacion">
+      <span class="etiqueta">Tema 4</span>
+      <h2>Recuperar contraseña</h2>
+      <p class="lead">La persona escribe su correo, recibe un código de 6 dígitos y con él elige una contraseña nueva. Hay un flujo para empleados (portal web) y otro idéntico para propietarios (app).</p>
+      <div class="tabla"><table>
+        <tr><th>Paso</th><th>Endpoint (público)</th><th>Qué hace</th></tr>
+        <tr><td><strong>1. Solicitar</strong></td><td><code>POST /api/auth/recuperar/{empleado|propietario}/solicitar</code></td><td>Si la cuenta existe y puede recuperarse, genera el código y lo manda por correo.</td></tr>
+        <tr><td><strong>2. Verificar</strong></td><td><code>POST …/verificar</code></td><td>Comprueba el código sin gastarlo, solo para dar respuesta inmediata en la pantalla.</td></tr>
+        <tr><td><strong>3. Restablecer</strong></td><td><code>POST …/restablecer</code></td><td>Revalida el código, lo gasta y guarda la contraseña nueva.</td></tr>
+      </table></div>
+      <h3>Dónde y cómo se guarda el código</h3>
+      <ul>
+        <li>En memoria, en un <code>ConcurrentHashMap</code> (<code>CodigoRecuperacionStore</code>). No hay tabla ni entidad.</li>
+        <li>Se guarda su <strong>hash</strong> (con el <code>PasswordEncoder</code>), no el texto plano.</li>
+        <li>La llave es <code>TIPO:correo en minúsculas</code>. Pedir otro código reemplaza al anterior.</li>
+        <li>El código se genera con <code>SecureRandom</code>: 6 dígitos con ceros a la izquierda.</li>
+      </ul>
+      <h3>Los límites</h3>
+      <div class="dos">
+        <div class="caja"><h4>Vigencia</h4><p>10 minutos. Después se rechaza y se elimina.</p></div>
+        <div class="caja"><h4>Intentos</h4><p>5 fallidos por código. El sexto obliga a pedir uno nuevo.</p></div>
+        <div class="caja"><h4>Entre envíos</h4><p>60 segundos. Dentro de ese lapso la API ignora el pedido sin avisar, y la pantalla web muestra «Demasiado rápido».</p></div>
+        <div class="caja"><h4>Respuesta genérica</h4><p>«Si el correo está registrado, se envió un código», exista o no la cuenta.</p></div>
+      </div>
+      <h3>Reglas por tipo de cuenta</h3>
+      <ul>
+        <li><strong>Empleado:</strong> solo si su estado es <code>Activo</code>. Se vuelve a comprobar al restablecer.</li>
+        <li><strong>Propietario:</strong> basta con que el correo exista.</li>
+        <li>La contraseña nueva debe tener entre 8 y 300 caracteres y se guarda hasheada.</li>
+      </ul>
+      <p>El correo se envía con <code>JavaMailSender</code> (SMTP) con una plantilla HTML de estilos en línea. Una tarea programada limpia cada hora los códigos abandonados.</p>
+      <div class="recuerda"><strong>Para recordar.</strong> «Verificar» no consume el código; «restablecer» sí. La seguridad no depende de la sesión (no la hay) sino de recibir el correo, más los límites de tiempo e intentos.</div>
+    </section>
+
+    <!-- 5 -->
+    <section class="tema" id="google">
+      <span class="etiqueta">Tema 5</span>
+      <h2>Inicio de sesión con Google</h2>
+      <p class="lead">Se usa Google Sign-In con ID token (OpenID Connect). No se piden permisos sobre datos de Google ni se usa un secreto de cliente. Google entrega un JWT firmado que dice quién es la persona y la API lo verifica.</p>
+      <h3>El recorrido</h3>
+      <div class="flujo">
+        <div class="paso"><b>1. App</b><small>obtiene el ID token (selector nativo o botón web)</small></div><span class="flecha">→</span>
+        <div class="paso"><b>2. POST</b><small><code>/api/auth/login/propietario/google</code></small></div><span class="flecha">→</span>
+        <div class="paso"><b>3. Verificador</b><small>firma, audiencia, vigencia, correo verificado</small></div><span class="flecha">→</span>
+        <div class="paso"><b>4. Decisión</b><small>entra, vincula o rechaza</small></div><span class="flecha">→</span>
+        <div class="paso"><b>5. Cookie</b><small>JWT propio de PetCore</small></div>
+      </div>
+      <h3>Qué verifica la API</h3>
+      <ul>
+        <li><strong>Firma</strong> contra las claves públicas de Google.</li>
+        <li><strong>Audiencia</strong> igual a nuestro client ID web. Un token emitido para otra app no sirve.</li>
+        <li><strong>Vigencia</strong> (<code>exp</code>).</li>
+        <li><strong><code>email_verified = true</code></strong>. Si Google no verificó el correo, se rechaza.</li>
+      </ul>
+      <p>De ahí salen dos datos confiables: el <code>sub</code> (identificador estable de la persona en Google, que se guarda en <code>PRO_GOOGLE_ID</code>) y el correo.</p>
+      <h3>El árbol de decisión</h3>
+      <pre><code>¿Existe un propietario con ese PRO_GOOGLE_ID?
+├── SÍ  → login directo
+└── NO  → ¿Existe un propietario con ese correo?
+          ├── NO  → 404: "Debes registrarte primero en la clínica"
+          └── SÍ  → ¿Tiene contraseña propia?
+                    ├── NO → se vincula sola
+                    └── SÍ → 409: pide la contraseña actual
+                              └── con la contraseña correcta → se vincula</code></pre>
+      <h3>Desvincular Google</h3>
+      <div class="tabla"><table>
+        <tr><th>Situación</th><th>Qué se exige</th></tr>
+        <tr><td>La cuenta tiene contraseña propia</td><td>La contraseña actual</td></tr>
+        <tr><td>Solo entra con Google</td><td>Volver a iniciar con la misma cuenta de Google y crear una contraseña nueva en ese mismo paso</td></tr>
+      </table></div>
+      <div class="recuerda"><strong>Para recordar.</strong> Google nunca crea cuentas nuevas: solo activa o enlaza un propietario que la clínica ya registró. Mientras la cuenta esté vinculada, el correo no se puede cambiar, porque es la llave del enlace.</div>
+    </section>
+
+    <!-- 6 -->
+    <section class="tema" id="errores">
+      <span class="etiqueta">Tema 6</span>
+      <h2>Excepciones y errores</h2>
+      <p class="lead">Los controllers y los services no usan <code>try/catch</code> para errores de negocio: lanzan una excepción y un único manejador global (<code>GlobalExceptionHandler</code>) la convierte en una respuesta HTTP con formato estándar.</p>
+      <h3>La jerarquía</h3>
+      <pre><code>RuntimeException
+ ├─ GlobalNotFoundException        ← CitasNotFoundException, ProductoNotFoundException…
+ ├─ GlobalDuplicateException       ← ComprasDuplicateException…
+ ├─ GlobalValidationException      ← ComprasValidationException…
+ ├─ GlobalBusinessRuleException    ← VentasBusinessRuleException…
+ ├─ GlobalDataIntegrityException
+ ├─ GlobalFieldValidationException (lleva un mapa campo → mensaje)
+ └─ BadCredentialException / CuentaInactivaException   (módulo auth)</code></pre>
+      <p>Cada módulo define sus propias excepciones (hay unas 240) pero heredan de estas cinco bases. Por eso el manejador tiene un método por categoría y sirve para los 51 módulos.</p>
+      <h3>Qué HTTP produce cada una</h3>
+      <div class="tabla"><table>
+        <tr><th>Excepción</th><th>HTTP</th><th>Cuándo</th></tr>
+        <tr><td><code>BadCredentialException</code></td><td>401</td><td>Credenciales incorrectas</td></tr>
+        <tr><td><code>CuentaInactivaException</code></td><td>403</td><td>Cuenta suspendida o inactiva</td></tr>
+        <tr><td><code>GlobalNotFoundException</code></td><td>404</td><td>No existe el registro</td></tr>
+        <tr><td><code>GlobalDuplicateException</code></td><td>409</td><td>Duplicado (factura, comprobante, correo)</td></tr>
+        <tr><td><code>GlobalValidationException</code></td><td>400</td><td>Regla de validación del service</td></tr>
+        <tr><td><code>GlobalBusinessRuleException</code></td><td>409</td><td>Regla de negocio (descuento mayor al subtotal, capacidad)</td></tr>
+        <tr><td><code>GlobalDataIntegrityException</code></td><td>409</td><td>Integridad a nivel de dominio</td></tr>
+        <tr><td><code>GlobalFieldValidationException</code></td><td>400 + details</td><td>Validación manual (multipart, líneas)</td></tr>
+        <tr><td><code>MethodArgumentNotValidException</code></td><td>400 + details</td><td>Falla de <code>@Valid</code> en un DTO</td></tr>
+        <tr><td>Violación de restricción de Oracle</td><td>409</td><td>UNIQUE, llave foránea, CHECK</td></tr>
+        <tr><td>Ruta inexistente</td><td>404</td><td>Endpoint mal escrito</td></tr>
+        <tr><td><code>Exception</code> (cualquier otra)</td><td>500</td><td>Error interno no controlado</td></tr>
+      </table></div>
+      <p>Spring Security responde aparte, con el mismo formato: 401 «No autenticado» o «Token expirado», y 403 «No tienes permiso».</p>
+      <h3>Cómo lo interpreta el frontend</h3>
+      <p><code>extraerMensajeError</code> sigue este orden de prioridad:</p>
+      <ol>
+        <li>Si el cuerpo trae <code>details</code> con un solo campo, usa ese mensaje. Con varios, los une uno por línea.</li>
+        <li>Si no, usa <code>message</code>.</li>
+        <li>Si no hay nada coherente, usa el mensaje por defecto del servicio.</li>
+        <li>Antepone el código HTTP: <code>[409 Conflict] …</code>.</li>
+      </ol>
+      <p>Después <code>lanzarErrorApi</code> lanza un <code>Error</code> con dos datos extra: <code>error.status</code> (para ramificar, por ejemplo 409 = duplicado) y <code>error.detalles</code> (el mapa por campo).</p>
+      <ul>
+        <li>Si el cuerpo no es JSON y el estado es 502, 503 o 504, avisa que el servidor tardó y que la acción pudo haberse aplicado, para evitar duplicados.</li>
+        <li><code>esCaidaDelServidor(error)</code> distingue un fallo de red o de gateway de un error de negocio.</li>
+        <li>Algunos módulos tienen un traductor propio: <code>interpretarErrorEmpleado</code> convierte nombres de restricciones de Oracle (<code>UQ_EMP_DUI</code>) en frases claras.</li>
+        <li>La app híbrida arma el <code>Error</code> a mano en cada servicio, con <code>status</code> y a veces <code>details</code>.</li>
+      </ul>
+      <div class="recuerda"><strong>Para recordar.</strong> El éxito viene en <code>{success, message, data}</code> y el error en <code>ErrorResponse</code>. El fetch parcheado solo desenvuelve los éxitos.</div>
+    </section>
+
+    <!-- 7 -->
+    <section class="tema" id="websocket">
+      <span class="etiqueta">Tema 7</span>
+      <h2>WebSocket</h2>
+      <p class="lead">Es un WebSocket simple, sin STOMP ni broker, en un único endpoint <code>/ws</code>. Cuando algo cambia, la API manda un aviso a todas las sesiones conectadas y cada pantalla decide si le interesa.</p>
+      <h3>Qué ocurre cuando cambia algo</h3>
+      <div class="flujo">
+        <div class="paso"><b>Service</b><small><code>difundir("CITA_ACTUALIZADA", datos)</code></small></div><span class="flecha">→</span>
+        <div class="paso"><b>Espera el commit</b><small>solo avisa si la transacción quedó firme</small></div><span class="flecha">→</span>
+        <div class="paso"><b>Serializa 1 vez</b><small>un JSON para todos</small></div><span class="flecha">→</span>
+        <div class="paso"><b>Pool de envío</b><small>un hilo por sesión</small></div><span class="flecha">→</span>
+        <div class="paso"><b>Cliente</b><small>vuelve a pedir por REST</small></div>
+      </div>
+      <h3>Eventos</h3>
+      <div class="tabla"><table>
+        <tr><th>Evento</th><th>Cuándo</th></tr>
+        <tr><td><code>CITA_ACTUALIZADA</code></td><td>Crear, editar, cancelar, iniciar o terminar consulta y autocancelaciones</td></tr>
+        <tr><td><code>NOTIFICACION_NUEVA</code></td><td>Nueva notificación (lleva <code>empIds</code> o <code>proId</code> para filtrar en el cliente)</td></tr>
+        <tr><td><code>PRODUCTO_ACTUALIZADO</code></td><td>Cambio de stock o datos del producto</td></tr>
+        <tr><td><code>SOLICITUD_BODEGA_ACTUALIZADA</code></td><td>Solicitud de stock</td></tr>
+        <tr><td><code>ASISTENCIA_ACTUALIZADA</code> / <code>ASISTENCIA_LOTE_TERMINADO</code></td><td>Asistencias</td></tr>
+        <tr><td><code>ANUNCIO_PUBLICADO</code>, <code>ANUNCIO_REACCION_…</code>, <code>ANUNCIO_COMENTARIO_…</code></td><td>Muro de anuncios</td></tr>
+        <tr><td><code>CONFIG_SISTEMA_ACTUALIZADA</code></td><td>Cambio de configuración (IVA, logo)</td></tr>
+        <tr><td><code>WS_ESTADO</code>, <code>WS_RECONECTADO</code></td><td>Solo en el navegador: estado de la conexión</td></tr>
+      </table></div>
+      <h3>Mecanismos de robustez</h3>
+      <ul>
+        <li><strong>Heartbeat doble.</strong> El servidor manda un ping cada 25 s (el router de Heroku corta a los 55 s sin tráfico). El cliente manda <code>"ping"</code> cada 25 s y espera <code>"pong"</code> en 10 s; si no llega, reconecta.</li>
+        <li><strong>Reconexión con espera creciente:</strong> 1, 2, 4… hasta 30 s, con algo de azar para que varias pestañas no golpeen a la vez.</li>
+        <li><strong><code>WS_RECONECTADO</code>:</strong> lo que se difundió mientras estuvo caído se perdió, así que las pantallas revalidan contra la API.</li>
+        <li><strong>Cliente lento:</strong> <code>ConcurrentWebSocketSessionDecorator</code> corta la sesión si tarda más de 5 s o acumula más de 256 KB.</li>
+        <li><strong>Cola acotada:</strong> pool de 2 a 4 hilos y 2000 envíos pendientes.</li>
+      </ul>
+      <div class="recuerda"><strong>Para recordar.</strong> El WebSocket casi nunca lleva los datos: dice «cambió una cita» y la pantalla refresca con un GET.</div>
+    </section>
+
+    <!-- 8 -->
+    <section class="tema" id="push">
+      <span class="etiqueta">Tema 8</span>
+      <h2>Notificaciones push</h2>
+      <p class="lead">Hay dos canales distintos que se disparan a la vez desde <code>NotificacionesService</code>: Web Push para el navegador del portal y Firebase Cloud Messaging (FCM) para la app Android.</p>
+      <h3>Web Push en el portal</h3>
+      <p>PetCore no contrata un proveedor propio. Web Push es un estándar abierto y el mensaje lo entrega el servicio push del fabricante del navegador:</p>
+      <div class="tabla"><table>
+        <tr><th>Navegador</th><th>Servicio que entrega el mensaje</th></tr>
+        <tr><td>Chrome, Edge, Brave, Opera</td><td>Google FCM (<code>fcm.googleapis.com</code>)</td></tr>
+        <tr><td>Firefox</td><td>Mozilla autopush</td></tr>
+        <tr><td>Safari</td><td>Apple Push</td></tr>
+      </table></div>
+      <h3>Suscripción (una vez por navegador)</h3>
+      <ol>
+        <li>El frontend registra el service worker <code>sw.js</code> y pide permiso.</li>
+        <li>Pide la llave pública VAPID a la API (<code>GET /api/push/vapid-public-key</code>).</li>
+        <li><code>pushManager.subscribe(...)</code>: el navegador contacta a su servicio push y devuelve <code>endpoint</code>, <code>p256dh</code> y <code>auth</code>.</li>
+        <li><code>POST /api/push/suscripciones</code> (con sesión) los guarda ligados al empleado o propietario del JWT.</li>
+      </ol>
+      <h3>Envío y recepción</h3>
+      <ol>
+        <li>La API arma un JSON <code>{titulo, mensaje, enlace}</code>.</li>
+        <li>La librería <code>web-push</code> lo cifra con las llaves de la suscripción y lo firma con la llave privada VAPID.</li>
+        <li>Lo manda por HTTPS al <code>endpoint</code>; el servicio push lo reenvía al navegador.</li>
+        <li>El service worker recibe el evento <code>push</code>, muestra la notificación y, al hacer clic, abre o enfoca la página del <code>enlace</code>.</li>
+      </ol>
+      <h3>Push nativo en Android (FCM)</h3>
+      <div class="flujo">
+        <div class="paso"><b>Al abrir la app</b><small>crea el canal <code>petcore_alertas</code> y pide permiso</small></div><span class="flecha">→</span>
+        <div class="paso"><b>Tras iniciar sesión</b><small>obtiene el token FCM y lo registra</small></div><span class="flecha">→</span>
+        <div class="paso"><b>API</b><small><code>sendEach</code> con firebase-admin</small></div><span class="flecha">→</span>
+        <div class="paso"><b>Android</b><small>dibuja la notificación aunque la app esté cerrada</small></div>
+      </div>
+      <ul>
+        <li>El mensaje lleva <code>notification</code> (para que el sistema la dibuje solo) y <code>data</code> (para que el JS sepa a dónde navegar).</li>
+        <li><strong>Prioridad HIGH</strong> y canal de importancia alta: sin eso, el modo Doze de Android la retrasa varios minutos y entra callada.</li>
+        <li>Al tocarla, <code>pushNotificationActionPerformed</code> traduce el código de <code>enlace</code> (por ejemplo <code>CITAS</code>) con un mapa de destinos.</li>
+        <li>Si FCM responde <code>UNREGISTERED</code> (o el servicio push responde 404 o 410) la API borra esa fila.</li>
+      </ul>
+      <div class="recuerda"><strong>Para recordar.</strong> Una suscripción pertenece al navegador, no a la persona. La unicidad es el par (endpoint, dueño): dos empleados en la misma PC tienen filas distintas con el mismo endpoint.</div>
+    </section>
+
+    <!-- 9 -->
+    <section class="tema" id="async">
+      <span class="etiqueta">Tema 9</span>
+      <h2>Asincronía y pools de hilos</h2>
+      <p class="lead">«Asíncrono» aquí significa mover trabajo secundario (notificaciones, push, lotes) fuera del hilo que atiende la petición, para responder antes y liberar hilos de Tomcat.</p>
+      <h3>Por qué no basta con la anotación</h3>
+      <ul>
+        <li><code>@EnableAsync</code> activa el mecanismo, que funciona con un <strong>proxy</strong>: Spring intercepta la llamada y la manda a un pool.</li>
+        <li>Si un método <code>@Async</code> se llama desde la <strong>misma clase</strong>, no pasa por el proxy y corre síncrono. Por eso existe <code>DespachadorAsincrono</code>, un bean aparte cuyo único método recibe un <code>Runnable</code>.</li>
+        <li>El hilo asíncrono no comparte la sesión de Hibernate: los datos con relaciones lazy se resuelven antes (por ejemplo, el id del propietario se convierte en un <code>Long</code> antes de lanzar la tarea).</li>
+        <li>Un fallo asíncrono no revierte lo ya guardado: cada notificación tiene su propio <code>try/catch</code>.</li>
+      </ul>
+      <h3>Trabajos largos con seguimiento</h3>
+      <p>Para el lote de asistencias, la API devuelve de inmediato un <code>jobId</code> con estado <code>PROCESANDO</code>, procesa en segundo plano y al terminar avisa por WebSocket (<code>ASISTENCIA_LOTE_TERMINADO</code>). El estado vive en un mapa en memoria y se limpia a los 30 minutos.</p>
+      <h3>El mapa de pools</h3>
+      <div class="tabla"><table>
+        <tr><th>Pool</th><th>Tamaño</th><th>Cola</th><th>Quién lo usa</th></tr>
+        <tr><td><strong>Tomcat</strong></td><td>máx. 30 (5 libres)</td><td>20</td><td>Peticiones HTTP y handshake del WebSocket</td></tr>
+        <tr><td><strong>Async por defecto</strong></td><td>~8</td><td>sin límite</td><td><code>@Async</code> y <code>DespachadorAsincrono</code></td></tr>
+        <tr><td><strong>Envíos WebSocket</strong></td><td>2 a 4</td><td>2000</td><td>Difundir eventos y pings</td></tr>
+        <tr><td><strong>Scheduler</strong></td><td>2</td><td>—</td><td>Las tareas <code>@Scheduled</code></td></tr>
+        <tr><td><strong>Hikari (Oracle)</strong></td><td>8 conexiones</td><td>espera hasta 30 s</td><td>Cualquier hilo que toque la base</td></tr>
+      </table></div>
+      <h3>Tareas programadas</h3>
+      <div class="tabla"><table>
+        <tr><th>Tarea</th><th>Frecuencia</th><th>Qué hace</th></tr>
+        <tr><td>Autocancelar citas vencidas</td><td>cada 60 s</td><td>Pasa a «No Presentado» las citas con 15 min de retraso</td></tr>
+        <tr><td>Autofinalizar consultas</td><td>cada 60 s</td><td>Cierra consultas que superaron el tiempo máximo</td></tr>
+        <tr><td>Cerrar citas de días anteriores</td><td>cada hora (min 20) y al arrancar</td><td>Evita citas abiertas de días pasados</td></tr>
+        <tr><td>Cerrar salidas pendientes</td><td>cada hora</td><td>Cierra asistencias abiertas</td></tr>
+        <tr><td>Productos por vencer</td><td>diaria, 7:00</td><td>Avisa vencimientos a 30 y 7 días</td></tr>
+        <tr><td>Limpiar códigos de recuperación</td><td>cada hora</td><td>Libera memoria</td></tr>
+      </table></div>
+      <div class="recuerda"><strong>Para recordar.</strong> Lo asíncrono no reduce el trabajo total: reduce lo que el usuario espera. Todos los pools compiten por solo 8 conexiones de base de datos, que es el techo real.</div>
+    </section>
+
+    <!-- 10 -->
+    <section class="tema" id="rendimiento">
+      <span class="etiqueta">Tema 10</span>
+      <h2>Rendimiento y el problema N+1</h2>
+      <p class="lead">El Eco dyno es modesto (unos 512 MB de RAM, un proceso, y se duerme tras 30 minutos sin tráfico). La API responde bien porque cada petición toca poco.</p>
+      <h3>Qué es el N+1</h3>
+      <p>Pedir una lista de N filas (1 consulta) y luego, al convertir cada una a DTO, tocar una relación lazy que dispara otra consulta por fila (N más). Con 100 citas son 101 consultas.</p>
+      <h3>Las soluciones que se aplicaron</h3>
+      <div class="dos">
+        <div class="caja"><h4>1. JOIN FETCH y EntityGraph</h4><p>Una sola consulta con <code>JOIN</code> trae la entidad y sus relaciones. Hay 67 <code>JOIN FETCH</code> y muchos <code>@EntityGraph</code> en los repositorios.</p></div>
+        <div class="caja"><h4>2. Batch fetch de 50</h4><p><code>default_batch_fetch_size=50</code>: lo que sigue lazy se carga de 50 en 50 con <code>WHERE id IN (...)</code>. Mil citas pasan de 1.000 consultas a unas 20.</p></div>
+        <div class="caja"><h4>3. Conteos agrupados</h4><p>En vez de cargar una colección para hacer <code>.size()</code>, una consulta <code>GROUP BY</code> con ids en bloques de 500 (el <code>IN</code> de Oracle admite 1.000).</p></div>
+        <div class="caja"><h4>4. Menos viajes HTTP</h4><p>Endpoints de resumen y de búsqueda paginada: los KPIs salen de <code>COUNT</code> y <code>SUM</code> en la base, sin entidades.</p></div>
+      </div>
+      <p>El caso documentado: <code>GET /api/ventas/por_fecha</code> pasaba de 28 segundos con unas 500 ventas porque cargaba las líneas de cada venta solo para contarlas; con la consulta agrupada dejó de ser un problema.</p>
+      <h3>Por qué cabe en poca memoria</h3>
+      <ul>
+        <li>Todas las relaciones son <code>LAZY</code> (170) y ninguna <code>EAGER</code>.</li>
+        <li>Paginación forzada (5 a 50 filas) y <code>fetch_size=100</code> para menos viajes a Oracle.</li>
+        <li>Pools acotados: Tomcat 30, Hikari 8, async ~8.</li>
+        <li>Sin sesiones en memoria: el JWT va en la cookie.</li>
+        <li>WebSocket en lugar de polling; el trabajo secundario va fuera del hilo de la petición.</li>
+        <li>Precalentamiento de Firebase al arrancar, para que el primer push no pague el handshake.</li>
+      </ul>
+      <h3>El arranque en frío</h3>
+      <p>Tras dormirse, la primera petición despierta la JVM y abre conexiones a Oracle, y puede responder 502, 503 o 504. El frontend reintenta las lecturas con espera creciente (suma de unos 17,5 s, por debajo de los 30 s que Heroku tolera).</p>
+      <div class="recuerda"><strong>Para recordar.</strong> Las relaciones LAZY son lo correcto, pero exigen decidir cómo se cargan en cada consulta: unir, agrupar o traer por lotes.</div>
+    </section>
+
+    <!-- 11 -->
+    <section class="tema" id="ios">
+      <span class="etiqueta">Tema 11</span>
+      <h2>La app híbrida y el porteo a iOS</h2>
+      <p class="lead">No hay una app iOS separada: es el mismo código web empaquetado con Capacitor dentro de un <code>WKWebView</code>. Lo difícil no fue la interfaz sino que iOS trata las cookies, los orígenes y las peticiones de otra manera que Android.</p>
+      <h3>Problemas y soluciones</h3>
+      <div class="tabla"><table>
+        <tr><th>Problema</th><th>Qué se hizo</th></tr>
+        <tr><td>La cookie de sesión no viajaba al dominio de la API (bloqueo de cookies de terceros)</td><td>Activar <code>CapacitorHttp</code> y <code>CapacitorCookies</code>: las peticiones salen por la red nativa y las cookies viven en un almacén nativo.</td></tr>
+        <tr><td>El origen de la app en iOS es <code>capacitor://localhost</code></td><td><code>iosScheme: "https"</code> en la configuración, y esos orígenes agregados al CORS y al WebSocket de la API.</td></tr>
+        <tr><td>El XHR síncrono de verificación de sesión se saltaba el puente nativo: iOS veía «sin sesión» y expulsaba al usuario recién logueado</td><td>Versiones asíncronas con <code>fetch</code> (<code>verificarSesionAsync</code>); <code>requerirSesion()</code> y <code>obtenerSesion()</code> pasaron a devolver Promesas.</td></tr>
+        <tr><td>«Cerrar sesión» no hacía nada: la cookie no se borraba</td><td>Una marca local <code>pc_cierre_sesion</code> y limpieza explícita de las cookies nativas.</td></tr>
+        <tr><td>Google bloquea OAuth dentro de un WebView</td><td>Plugin nativo de inicio de sesión, con <code>GIDClientID</code> y el esquema de URL invertido en <code>Info.plist</code>.</td></tr>
+        <tr><td>El tema se decide antes del primer render y su consulta síncrona falla en iOS</td><td>Se guarda el último id de propietario como respaldo para leer las preferencias.</td></tr>
+      </table></div>
+      <h3>El recorrido de una petición en iOS</h3>
+      <div class="flujo">
+        <div class="paso"><b>JS</b><small><code>fetch(credentials: "include")</code></small></div><span class="flecha">→</span>
+        <div class="paso"><b>CapacitorHttp</b><small>capa nativa, con la cookie</small></div><span class="flecha">→</span>
+        <div class="paso"><b>API en Heroku</b><small>CORS permite el origen de la app</small></div><span class="flecha">→</span>
+        <div class="paso"><b>CapacitorCookies</b><small>guarda el Set-Cookie</small></div>
+      </div>
+      <h3>Otras piezas nativas</h3>
+      <ul>
+        <li>Swift Package Manager con los plugins: Filesystem, Share, StatusBar, PushNotifications y SocialLogin.</li>
+        <li>Iconos con variantes oscura y tintada.</li>
+        <li>Android: <code>google-services.json</code>, <code>firebase-messaging</code>, canal, ícono y color de notificación en el manifest.</li>
+      </ul>
+      <div class="recuerda"><strong>Para recordar.</strong> El puente nativo de Capacitor es asíncrono: cualquier petición síncrona queda fuera de él. Por eso la verificación de sesión se reescribió con <code>fetch</code>.</div>
+    </section>
+
+    <!-- 12 -->
+    <section class="tema" id="concurrencia">
+      <span class="etiqueta">Tema 12</span>
+      <h2>Concurrencia y consistencia de datos</h2>
+      <p class="lead">Cuando dos personas hacen algo a la vez, el resultado correcto no puede depender de quién llegó primero por casualidad. Las transacciones y los bloqueos hacen que dos operaciones simultáneas no se pisen.</p>
+      <h3>Vocabulario</h3>
+      <div class="tabla"><table>
+        <tr><th>Término</th><th>Significado</th><th>Ejemplo en PetCore</th></tr>
+        <tr><td><strong>ACID</strong></td><td>Atomicidad, consistencia, aislamiento y durabilidad</td><td>Compra y líneas en una sola transacción</td></tr>
+        <tr><td><strong>Condición de carrera</strong></td><td>El resultado depende del orden de ejecución</td><td>Dos cajeros venden la última unidad</td></tr>
+        <tr><td><strong>Check-then-act</strong></td><td>Comprobar y luego actuar, sin bloquear entre medio</td><td><code>validarStockDisponible</code></td></tr>
+        <tr><td><strong>Actualización perdida</strong></td><td>Dos lecturas y dos escrituras: gana la última</td><td>Ingreso de stock calculado en el navegador</td></tr>
+        <tr><td><strong>Bloqueo pesimista</strong></td><td>Bloquear la fila antes de tocarla</td><td><code>SELECT … FOR UPDATE</code></td></tr>
+        <tr><td><strong>Bloqueo optimista</strong></td><td>Dejar escribir y verificar una versión</td><td><code>@Version</code></td></tr>
+        <tr><td><strong>Idempotencia</strong></td><td>Repetir una petición no repite el efecto</td><td>Reintentar un POST</td></tr>
+      </table></div>
+      <h3>Caso: la última unidad</h3>
+      <ol>
+        <li>La API lee el stock y compara con la cantidad pedida (<code>validarStockDisponible</code>). Es una comprobación sin bloqueo.</li>
+        <li>Dos ventas simultáneas pueden leer <code>stock = 1</code> y pasar las dos.</li>
+        <li>El trigger <code>TRG_DETALLE_VENTA_STOCK</code> descuenta con una resta relativa: <code>SET stock = stock - :cantidad</code>.</li>
+        <li>Oracle bloquea la fila: la segunda transacción espera a que la primera confirme.</li>
+        <li>Al entrar, el stock ya es 0 y la restricción <code>CHECK (PROD_STOCK_DISPONIBLE &gt;= 0)</code> la rechaza y la revierte.</li>
+      </ol>
+      <div class="recuerda"><strong>Para recordar.</strong> La validación de la aplicación es para la experiencia; la restricción de la base de datos es para la verdad.</div>
+    </section>
+
+    <!-- 13 -->
+    <section class="tema" id="glosario">
+      <span class="etiqueta">Tema 13</span>
+      <h2>Glosario rápido</h2>
+      <dl class="glosario">
+        <div><dt>JWT</dt><dd>Token firmado que contiene quién eres (id, rol, tipo) y cuándo caduca.</dd></div>
+        <div><dt>httpOnly</dt><dd>Cookie que el JavaScript de la página no puede leer.</dd></div>
+        <div><dt>SameSite</dt><dd>Regla que controla si la cookie viaja en peticiones desde otro sitio.</dd></div>
+        <div><dt>CORS</dt><dd>Lista de orígenes que la API permite y reglas para llamadas entre dominios.</dd></div>
+        <div><dt>Preflight</dt><dd>Petición <code>OPTIONS</code> previa que el navegador hace antes de una llamada entre dominios.</dd></div>
+        <div><dt>DTO</dt><dd>Objeto que viaja por la red; separa lo que se expone de la entidad de base de datos.</dd></div>
+        <div><dt>Entity</dt><dd>Clase que representa una fila de una tabla.</dd></div>
+        <div><dt>LAZY / EAGER</dt><dd>Cargar una relación cuando se usa / cargarla siempre junto con la entidad.</dd></div>
+        <div><dt>N+1</dt><dd>1 consulta de lista más N consultas, una por fila, para leer relaciones.</dd></div>
+        <div><dt>JOIN FETCH</dt><dd>Traer una entidad y sus relaciones en una sola consulta.</dd></div>
+        <div><dt>Hikari</dt><dd>Pool de conexiones a la base de datos.</dd></div>
+        <div><dt>Proxy (Spring)</dt><dd>Objeto que intercepta llamadas para añadir transacciones o asincronía.</dd></div>
+        <div><dt>@Async</dt><dd>Ejecuta un método en otro hilo, a través del proxy.</dd></div>
+        <div><dt>VAPID</dt><dd>Par de llaves que identifica al servidor ante el servicio push del navegador.</dd></div>
+        <div><dt>FCM</dt><dd>Firebase Cloud Messaging: servicio de Google para push a dispositivos.</dd></div>
+        <div><dt>Doze</dt><dd>Modo de ahorro de Android que retrasa mensajes de prioridad normal.</dd></div>
+        <div><dt>Heartbeat</dt><dd>Mensaje periódico que mantiene viva una conexión y detecta si está muerta.</dd></div>
+        <div><dt>Capacitor</dt><dd>Empaqueta una web como app nativa y da acceso a funciones del dispositivo.</dd></div>
+        <div><dt>WKWebView</dt><dd>Componente de iOS que muestra páginas web dentro de una app.</dd></div>
+        <div><dt>ID token</dt><dd>JWT firmado por Google que identifica a la persona que inició sesión.</dd></div>
+        <div><dt>Idempotente</dt><dd>Operación que da el mismo resultado si se repite.</dd></div>
+        <div><dt>Trigger</dt><dd>Código de la base de datos que se ejecuta ante un insert, update o delete.</dd></div>
+      </dl>
+    </section>
+
+    <!-- 14 -->
+    <section class="tema" id="preguntas">
+      <span class="etiqueta">Tema 14</span>
+      <h2>Banco de preguntas difíciles</h2>
+      <p class="lead">Preguntas como las haría un revisor técnico exigente, con la respuesta tal como se puede dar sobre este proyecto. Ábrelas, filtra por tema o nivel, y marca las que ya dominas.</p>
+      <div class="filtros">
+        <div class="fila">
+          <input type="search" id="buscar" placeholder="Buscar en preguntas y respuestas…" aria-label="Buscar preguntas">
+          <button class="btn" id="btnAzar" type="button">Pregunta al azar</button>
+          <button class="btn" id="btnAbrir" type="button">Abrir todas</button>
+          <button class="btn" id="btnReiniciar" type="button">Reiniciar progreso</button>
+        </div>
+        <div class="fila"><span class="contador">Tema:</span><div class="chips" id="chipsTema"></div></div>
+        <div class="fila"><span class="contador">Nivel:</span><div class="chips" id="chipsNivel"></div><span class="contador" id="contador" aria-live="polite"></span></div>
+      </div>
+      <div id="listaQ"></div>
+      <p class="vacio" id="vacio" hidden>Ninguna pregunta coincide con ese filtro.</p>
+    </section>
+  </main>
+</div>
+
+<script>
+/* ---------------------------------------------------------------- banco de preguntas */
+var TEMAS = {
+  sesion: "Sesión y cookies", recuperacion: "Recuperar contraseña", google: "Google",
+  errores: "Excepciones", websocket: "WebSocket", push: "Push", async: "Asincronía y pools",
+  rendimiento: "Rendimiento y N+1", app: "App híbrida e iOS", concurrencia: "Concurrencia",
+  datos: "API y frontend"
+};
+var NIVELES = { 1: "Básica", 2: "Media", 3: "Pesada" };
+
+var QA = [
+/* ============ DATOS: API y frontend ============ */
+{ t: "datos", n: 1, q: "Explica el recorrido de un dato desde que el usuario pulsa «Guardar» hasta la base de datos.",
+  a: "<p>La pantalla valida y llama a una función de un archivo <code>*_service.js</code>, que arma la URL, el método y el cuerpo y llama a <code>fetch</code>. Ese <code>fetch</code> está parcheado una sola vez para todas las páginas: agrega la cookie de sesión, reintenta lecturas si Heroku está despertando y desenvuelve la respuesta.</p><p>En la API, Spring Security aplica CORS, valida el JWT de la cookie y comprueba el rol. El <strong>controller</strong> valida el DTO con <code>@Valid</code>, el <strong>service</strong> aplica reglas y abre la transacción, el <strong>repository</strong> consulta Oracle y la respuesta vuelve como <code>ApiResponse</code>.</p>" },
+{ t: "datos", n: 2, q: "¿Por qué parchean <code>fetch</code> en lugar de agregar la cookie en cada servicio?",
+  a: "<p>Hay decenas de servicios, uno por módulo. Parchear <code>fetch</code> una sola vez, en un script clásico que carga antes que cualquier módulo, centraliza cuatro trabajos: <code>credentials: \"include\"</code>, reintentos de lecturas, desenvolver <code>ApiResponse</code> y cerrar la sesión ante 401 o 403.</p><p>El costo es que es comportamiento implícito: quien lee un servicio no ve esa lógica y debe saber que existe.</p>" },
+{ t: "datos", n: 2, q: "¿Por qué solo reintentan las peticiones GET y no las POST, PUT o DELETE?",
+  a: "<p>Reintentar una escritura a ciegas puede duplicar una acción: si el servidor sí guardó la cita pero la respuesta se perdió, un segundo POST crearía otra. Una lectura es idempotente, así que se puede repetir sin efecto.</p><p>Por eso, ante un 502, 503 o 504 en una escritura, el mensaje avisa que la acción pudo haberse aplicado y pide verificar antes de repetir.</p>" },
+{ t: "datos", n: 2, q: "¿Cómo se suben archivos junto con datos (por ejemplo la foto de un producto)?",
+  a: "<p>Con una petición <code>multipart/form-data</code>: un <code>FormData</code> con dos partes, <code>config</code> (un <code>Blob</code> JSON con los datos) y <code>foto</code> (el archivo). El servidor las recibe con <code>@RequestPart</code>.</p><p>Como no se puede anotar con <code>@Valid</code> directamente, el controller valida el DTO a mano con un <code>Validator</code> y lanza <code>GlobalFieldValidationException</code> con el mapa campo → mensaje, que sale con el mismo formato que una validación normal. El límite es 10 MB por archivo.</p>" },
+{ t: "datos", n: 3, q: "Alguien pide <code>?size=99999</code> a un listado. ¿Qué pasa?",
+  a: "<p>Nada grave: todos los listados paginados arman su <code>Pageable</code> con <code>PaginacionUtils.de(page, size)</code>, que fuerza la página a ser 0 o más y el tamaño entre 5 y 50. Un cliente no puede convertir la paginación en un «traeme todo».</p>" },
+{ t: "datos", n: 3, q: "¿Por qué validan en el frontend, en la API y en la base de datos si ya valida una de las tres?",
+  a: "<p>Cada capa cumple un rol distinto. <strong>El frontend</strong> da una respuesta inmediata y específica (qué campo falta). <strong>La API</strong> es la que de verdad protege, porque el frontend se puede saltar con cualquier cliente. <strong>La base de datos</strong> es la última defensa y la única que resiste condiciones de carrera (restricciones UNIQUE, CHECK, llaves foráneas).</p><p>Mantenerlas alineadas evita que el usuario vea un error genérico de Oracle en vez de un mensaje claro.</p>" },
+{ t: "datos", n: 3, q: "La compra y sus productos, ¿se guardan por separado o juntos? ¿Por qué?",
+  a: "<p>Juntos, en una sola transacción. <code>POST /api/compras</code> exige el arreglo <code>detalles</code> con al menos un producto, valida cada línea, comprueba que el total coincida con la suma de los subtotales y guarda la compra y las líneas. Si una línea falla, no queda una compra vacía.</p><p>Lo mismo se hizo con ventas y con prescripciones. Antes se creaba la cabecera y luego las líneas en una segunda petición, con riesgo de dejar cabeceras huérfanas.</p>" },
+{ t: "datos", n: 2, q: "¿Qué diferencia hay entre <code>PUT</code> y <code>PATCH</code> en la API?",
+  a: "<p><code>PUT</code> reemplaza el recurso con el DTO completo; <code>PATCH</code> modifica solo los campos enviados. Por ejemplo, editar a un empleado usa <code>PATCH</code> (sin contraseña), mientras que crearlo usa <code>POST</code> con la contraseña inicial.</p>" },
+
+/* ============ SESIÓN ============ */
+{ t: "sesion", n: 2, q: "¿Por qué el JWT va en una cookie <code>httpOnly</code> y no en <code>localStorage</code>?",
+  a: "<p>Una cookie <code>httpOnly</code> no se puede leer desde JavaScript, así que un XSS no puede robar el token. En <code>localStorage</code> cualquier script de la página lo leería. Además el navegador la manda solo, sin que el código la maneje.</p><p>A cambio hay que pensar en CSRF. Aquí lo cubren el <code>SameSite</code>, la lista de orígenes permitidos por CORS y que la API solo recibe JSON: un formulario de otro sitio no puede enviar <code>application/json</code> sin pasar por un preflight.</p>" },
+{ t: "sesion", n: 3, q: "La cookie dura 15 minutos y el JWT 24 horas. ¿Por qué dos relojes y cómo se «renueva» la sesión?",
+  a: "<p>La renovación es solo de la <strong>cookie</strong>: en cada petición autenticada, <code>JwtCookieAuthFilter</code> vuelve a emitir <strong>el mismo JWT</strong> con <code>Max-Age=900</code>. El JWT no se vuelve a emitir, así que su <code>exp</code> sigue fijo a 24 horas desde el login.</p><p>Resultado: una ventana deslizante de 15 minutos de inactividad, con un tope absoluto de 24 horas. Si pasan 15 minutos sin peticiones, el navegador borra la cookie; si pasan 24 horas, el servidor rechaza el token aunque haya actividad.</p>" },
+{ t: "sesion", n: 3, q: "Si la cookie se renueva en cada petición, ¿cuánto puede durar una sesión como máximo?",
+  a: "<p>24 horas desde el login, que es la vigencia del JWT. Pasado ese momento <code>parseToken</code> lanza <code>ExpiredJwtException</code>, el filtro marca el request y <code>RestAuthHandlers</code> responde <strong>401 «Token expirado: vuelve a iniciar sesión»</strong>.</p><p>Cuando la cookie se borró por inactividad el mensaje es otro, «No autenticado», porque el token ni siquiera llegó.</p>" },
+{ t: "sesion", n: 3, q: "«15 minutos de inactividad»: ¿inactividad de quién?",
+  a: "<p>Inactividad de <strong>peticiones</strong>, no de la persona. Como las pantallas se refrescan por eventos de WebSocket y hacen peticiones solas, mientras la página esté abierta la cookie sigue renovándose. El reloj de 15 minutos solo vence cuando la pestaña lleva ese tiempo sin tocar el servidor.</p>" },
+{ t: "sesion", n: 3, q: "Al cerrar sesión, ¿el JWT deja de ser válido?",
+  a: "<p>No como tal. El token es <em>stateless</em>: la API no guarda una lista de tokens vigentes. <code>POST /api/auth/logout</code> manda las dos cookies con <code>Max-Age=0</code> para que el navegador las borre, pero el JWT en sí seguiría siendo válido hasta su <code>exp</code> si alguien lo hubiera copiado.</p><p>Para invalidar de verdad hay tres caminos: una lista negra de identificadores (el token lleva <code>jti</code>), una «versión de sesión» por usuario que se compara en cada petición, o un JWT de vida más corta con renovación real.</p>" },
+{ t: "sesion", n: 3, q: "Un administrador desactiva a un empleado que tiene la sesión abierta. ¿Qué pasa?",
+  a: "<p>El filtro arma el usuario a partir de los claims del token y no consulta la base en cada petición, así que el rol y la identidad viajan «congelados». La sesión sigue hasta que la cookie venza por inactividad o el JWT expire.</p><p>El estado sí se comprueba en el inicio de sesión y en la recuperación de contraseña (<code>exigirEmpleadoActivo</code>), y <code>/me</code> verifica que la fila exista. Para corte inmediato habría que comprobar el estado en el filtro o versionar el token.</p>" },
+{ t: "sesion", n: 2, q: "Si el JavaScript no puede leer la cookie, ¿cómo sabe la app quién es el usuario?",
+  a: "<p>Pregunta a la API: <code>GET /api/auth/me/empleado</code> o <code>/me/propietario</code>. Cada variante lee directamente su propia cookie (no depende del contexto de seguridad del filtro) y devuelve identidad, rol y nombre, o 401 si no hay sesión.</p>" },
+{ t: "sesion", n: 2, q: "¿Por qué existen dos cookies, <code>authToken</code> y <code>authTokenPropietario</code>?",
+  a: "<p>Para que una sesión de empleado (portal web) y una de propietario (app) puedan convivir en el mismo navegador sin pisarse. Si llegan las dos, el filtro prioriza la de empleado; en producción, al estar en dominios distintos, ni viajan juntas.</p>" },
+{ t: "sesion", n: 3, q: "¿Qué significa <code>SessionCreationPolicy.STATELESS</code> y qué ganan con eso?",
+  a: "<p>Spring no crea ni usa <code>HttpSession</code>: cada petición se autentica por sí sola con el JWT de la cookie. Gana escalabilidad horizontal en teoría (no hay sesión que compartir), menos memoria por usuario y ninguna afinidad de servidor. El precio es que invalidar una sesión por servidor requiere un mecanismo extra.</p>" },
+{ t: "sesion", n: 3, q: "¿Por qué HS256 y qué implica para la seguridad?",
+  a: "<p>HS256 es una firma simétrica: el mismo secreto firma y verifica. Es adecuado cuando un solo servicio emite y valida, como aquí. El secreto vive en una variable de entorno; si se filtra, cualquiera puede fabricar tokens, y rotarlo invalida todas las sesiones.</p><p>Si hubiera varios servicios que solo verifican, convendría RS256 (llave privada para firmar, pública para verificar).</p>" },
+
+/* ============ RECUPERACIÓN ============ */
+{ t: "recuperacion", n: 2, q: "El endpoint de recuperar contraseña es público. ¿Cómo se protege?",
+  a: "<p>Quien la olvidó no tiene sesión, así que las seis rutas son <code>permitAll</code>. La seguridad no viene de la sesión sino de <strong>poseer el correo</strong> más límites: el código dura 10 minutos, admite 5 intentos, se gasta al usarse, hay 60 segundos entre envíos y la respuesta es siempre la misma exista o no la cuenta.</p>" },
+{ t: "recuperacion", n: 3, q: "¿Por qué «solicitar» responde lo mismo aunque el correo no exista?",
+  a: "<p>Para evitar la <strong>enumeración de cuentas</strong>: si respondiera distinto, un atacante podría descubrir qué correos están registrados. Por eso un correo inexistente, un empleado inactivo y un reenvío demasiado pronto devuelven el mismo mensaje genérico. Incluso un fallo del SMTP se registra sin revelarse al cliente.</p>" },
+{ t: "recuperacion", n: 3, q: "¿Dónde se guarda el código y por qué como hash? ¿Qué pasa si se reinicia el servidor?",
+  a: "<p>En un <code>ConcurrentHashMap</code> en memoria, con la llave <code>TIPO:correo</code>. Se guarda el hash (con el <code>PasswordEncoder</code>) para que ni un volcado de memoria revele el código.</p><p>Si el proceso se reinicia, los códigos pendientes se pierden y la persona simplemente pide uno nuevo. Es un diseño deliberado para un solo servidor; con varias instancias habría que moverlo a una base de datos o a Redis.</p>" },
+{ t: "recuperacion", n: 3, q: "Un código de 6 dígitos tiene un millón de combinaciones. ¿Qué impide adivinarlo por fuerza bruta?",
+  a: "<p>Cada código admite 5 intentos fallidos y luego se elimina, vive 10 minutos, y solo se puede pedir uno nuevo cada 60 segundos (el nuevo reemplaza al anterior y reinicia el contador). Como mucho, un atacante tiene unos 300 intentos por hora para un correo: 300 de 1.000.000, cerca de 0,03 %.</p><p>Además, el código llega solo al dueño del correo, así que el atacante tampoco puede ver el éxito de la solicitud.</p>" },
+{ t: "recuperacion", n: 2, q: "¿Por qué «verificar» y «restablecer» validan los dos el código?",
+  a: "<p>«Verificar» solo da respuesta inmediata en la pantalla del paso 2 y <strong>no consume</strong> el código. «Restablecer» es el que autoriza el cambio: vuelve a validarlo, lo consume y guarda la contraseña. El backend no confía en que «verificar» ya haya pasado.</p>" },
+
+/* ============ GOOGLE ============ */
+{ t: "google", n: 2, q: "¿Qué recibe la API cuando alguien entra con Google y qué comprueba?",
+  a: "<p>Recibe un <strong>ID token</strong> (un JWT firmado por Google). <code>GoogleTokenVerifier</code> comprueba la firma contra las claves públicas de Google, que la audiencia sea nuestro client ID, que no esté vencido y que <code>email_verified</code> sea verdadero. De ahí obtiene el <code>sub</code> y el correo; nunca confía en datos sueltos del frontend.</p>" },
+{ t: "google", n: 3, q: "¿Por qué Google no crea cuentas nuevas en PetCore?",
+  a: "<p>Es una decisión de producto: el portal es solo para clientes que la clínica ya registró (recepción registra al propietario junto con su mascota). Crear cuentas desde Google dejaría propietarios «huérfanos» sin mascotas y filas duplicadas cuando esa persona sí termine yendo a la clínica. Si no existe un propietario con ese correo, responde 404 y pide registrarse primero.</p>" },
+{ t: "google", n: 3, q: "¿Qué es el 409 al vincular y por qué pide la contraseña?",
+  a: "<p>Si ya existe un propietario con ese correo y <strong>tiene contraseña propia</strong>, la API responde 409 (<code>VinculacionRequeridaException</code>). Sin ese paso, cualquiera con una cuenta de Google del mismo correo se apropiaría de una cuenta con contraseña ajena. Pedir la contraseña actual prueba que quien vincula es el dueño de la cuenta.</p>" },
+{ t: "google", n: 3, q: "¿Por qué exigen <code>email_verified</code>?",
+  a: "<p>Un correo que Google no verificó no prueba que la persona sea dueña de esa dirección. Sin esa exigencia, alguien con una cuenta de Google con un correo sin verificar podría vincularse a la cuenta de otro propietario que usa ese mismo correo.</p>" },
+{ t: "google", n: 2, q: "El client ID de Google está en el frontend. ¿Es un secreto?",
+  a: "<p>No. En Google Identity Services el client ID es público por diseño; lo que nunca va al navegador es el secreto de cliente, y aquí ni siquiera se usa. La API tiene el mismo client ID configurado como <strong>audiencia</strong> para rechazar tokens emitidos para otra aplicación.</p>" },
+{ t: "google", n: 3, q: "¿Por qué en la app se usa un plugin nativo y no el botón web de Google?",
+  a: "<p>Google bloquea el flujo OAuth dentro de un WebView embebido. En Android e iOS se usa el selector nativo de cuentas (plugin <code>social-login</code>). El ID token que devuelve lleva como audiencia el client ID web (<code>iOSServerClientId</code> / <code>webClientId</code>), que es el que verifica el backend, y el cliente de iOS se configura en <code>Info.plist</code>.</p>" },
+{ t: "google", n: 3, q: "Un propietario que solo entra con Google quiere desvincular la cuenta. ¿Cómo evitan que se quede sin acceso?",
+  a: "<p>La API exige volver a iniciar sesión con la misma cuenta de Google (el <code>sub</code> debe coincidir) y <strong>crear una contraseña nueva en ese mismo paso</strong>. Si ya tenía contraseña propia, basta con la contraseña actual. Después <code>PRO_GOOGLE_ID</code> queda en <code>NULL</code> y el correo vuelve a ser editable.</p>" },
+
+/* ============ EXCEPCIONES ============ */
+{ t: "errores", n: 2, q: "¿Cómo está organizada la jerarquía de excepciones y por qué así?",
+  a: "<p>Hay cinco clases base (<code>NotFound</code>, <code>Duplicate</code>, <code>Validation</code>, <code>BusinessRule</code>, <code>DataIntegrity</code>) que extienden <code>RuntimeException</code>. Cada módulo define las suyas y heredan de una base. Así <code>GlobalExceptionHandler</code> necesita un método por categoría, no uno por excepción, y sirve para los 51 módulos sin tocarlo.</p>" },
+{ t: "errores", n: 2, q: "¿Qué diferencia hay entre <code>ApiResponse</code> y <code>ErrorResponse</code>?",
+  a: "<p><code>ApiResponse</code> envuelve los éxitos: <code>{success, message, data}</code>. <code>ErrorResponse</code> es el formato de los errores: <code>{timestamp, status, error, message, path, details}</code>. El <code>fetch</code> parcheado solo desenvuelve el primero; los errores pasan intactos porque llevan el código y el detalle por campo.</p>" },
+{ t: "errores", n: 3, q: "¿Por qué una regla de negocio devuelve 409 y no 400 o 422?",
+  a: "<p>400 se reserva para entrada mal formada o que viola validaciones del DTO. 409 indica que la petición es válida pero <strong>entra en conflicto con el estado actual</strong> del recurso: un descuento mayor que el subtotal, una cama sin capacidad, un comprobante duplicado. En el código, <code>BusinessRule</code>, <code>Duplicate</code> y <code>DataIntegrity</code> devuelven 409.</p>" },
+{ t: "errores", n: 3, q: "Una validación falla en tres campos a la vez. ¿Qué ve el usuario?",
+  a: "<p>La API responde 400 con <code>details</code> como un mapa campo → mensaje. <code>extraerMensajeError</code> lo une en un solo texto, un campo por línea, con el código HTTP al inicio, para que sepa exactamente qué corregir. El <code>Error</code> resultante conserva <code>error.detalles</code> por si la pantalla quiere señalar cada campo.</p>" },
+{ t: "errores", n: 3, q: "El servidor responde 502 al guardar una compra. ¿Qué le dicen al usuario y por qué?",
+  a: "<p>Si el cuerpo no es JSON y el estado es 502, 503 o 504, el mensaje es «El servidor tardó demasiado en responder; es posible que sí se haya aplicado… verifica antes de repetir». No se afirma que falló porque no se sabe: el backend pudo procesarla y perderse solo la respuesta. Y por eso las escrituras no se reintentan solas.</p>" },
+{ t: "errores", n: 3, q: "¿Qué ocurre con un error que lanza un trigger de Oracle con <code>RAISE_APPLICATION_ERROR</code>?",
+  a: "<p>No es una violación de restricción, así que normalmente no llega como <code>DataIntegrityViolation</code> (409) y cae en el manejador genérico: <strong>500 con un mensaje general</strong>. Por eso los services validan antes lo que el trigger comprobaría (capacidad de hospitalización, stock, espaciado de citas): para devolver un mensaje claro en lugar de depender del trigger.</p>" },
+{ t: "errores", n: 3, q: "¿Qué hace el frontend al ver un 401 o 403 en medio del uso?",
+  a: "<p>El <code>fetch</code> parcheado revisa cada respuesta de las APIs propias: si es 401 o 403 y la ruta no es de <code>/api/auth/</code>, llama a <code>window.cerrarSesion()</code>, que registra la salida de asistencia pendiente del día y manda al login. Para el portal, un 403 casi siempre significa que la sesión ya no sirve, porque el portal nunca llama a rutas fuera de lo que su rol permite.</p>" },
+
+/* ============ WEBSOCKET ============ */
+{ t: "websocket", n: 2, q: "¿Por qué WebSocket y no hacer polling cada pocos segundos?",
+  a: "<p>El polling genera peticiones constantes aunque no haya cambios, y en un servidor con 8 conexiones de base de datos eso es caro. Con WebSocket el servidor avisa solo cuando algo cambia, y la pantalla vuelve a pedir los datos en ese momento. Es menos tráfico y la actualización es casi instantánea.</p>" },
+{ t: "websocket", n: 3, q: "¿Por qué el evento se registra en <code>afterCommit</code>?",
+  a: "<p>Para no avisar de algo que luego se revierte. <code>difundir</code> comprueba si hay una transacción activa y, si la hay, registra el envío con <code>TransactionSynchronization.afterCommit()</code>. Así ningún cliente recibe «cita actualizada» por un cambio que terminó en rollback.</p>" },
+{ t: "websocket", n: 3, q: "¿Cómo evitan que un cliente lento retrase a los demás?",
+  a: "<p>El JSON se serializa una sola vez y cada envío corre en un pool propio de 2 a 4 hilos con cola de 2000, fuera del hilo de la petición. Cada sesión va envuelta en <code>ConcurrentWebSocketSessionDecorator</code>, que serializa los envíos (una sesión no admite dos <code>sendMessage</code> simultáneos) y la corta si el cliente tarda más de 5 s o acumula más de 256 KB.</p>" },
+{ t: "websocket", n: 3, q: "¿Para qué hay dos heartbeats, el del servidor y el del cliente?",
+  a: "<p>El del <strong>servidor</strong> (ping de protocolo cada 25 s) mantiene tráfico para que el router de Heroku no corte la conexión a los 55 s de silencio. El del <strong>cliente</strong> (texto <code>ping</code> y espera de <code>pong</code> en 10 s) detecta una conexión medio muerta —cambió la red, el equipo durmió— y reconecta sin esperar a que el navegador se entere.</p>" },
+{ t: "websocket", n: 3, q: "Mientras el socket estuvo caído se pierden eventos. ¿Cómo lo resuelven?",
+  a: "<p>Al reconectar, el cliente emite un evento sintético <code>WS_RECONECTADO</code> y las pantallas suscritas revalidan contra la API por REST. El WebSocket no es la fuente de verdad: solo es un aviso; los datos siempre se pueden volver a pedir.</p>" },
+{ t: "websocket", n: 3, q: "¿Está autenticado el WebSocket? ¿Quién recibe los eventos?",
+  a: "<p>Hoy <code>/ws/**</code> es <code>permitAll</code> y el servidor difunde a todas las sesiones; cada pantalla filtra lo que le importa (por ejemplo <code>NOTIFICACION_NUEVA</code> lleva <code>empIds</code> o <code>proId</code> y el cliente descarta lo ajeno). Los orígenes permitidos están acotados por una lista.</p><p>La mejora natural es validar la cookie en el handshake, filtrar por rol en el servidor y enviar solo identificadores, de modo que el detalle se pida por REST (que sí está protegido).</p>" },
+{ t: "websocket", n: 3, q: "¿Cómo escalarían el WebSocket a más de un servidor?",
+  a: "<p>Hoy las sesiones viven en un mapa en memoria de un solo proceso: un evento solo llegaría a los clientes conectados a esa instancia. Hay que poner un <strong>broker compartido</strong> (Redis pub/sub o un broker STOMP) para que cada instancia reciba los eventos y los reenvíe a sus propias sesiones.</p>" },
+
+/* ============ PUSH ============ */
+{ t: "push", n: 2, q: "En Web Push, ¿quién es realmente el proveedor?",
+  a: "<p>Ninguno que contrate PetCore. Web Push es un estándar abierto y entrega el servicio push del navegador de cada usuario: Google FCM para Chrome y Edge, Mozilla autopush para Firefox y Apple para Safari. Se ve en el <code>endpoint</code> de la suscripción. La API se identifica con sus propias llaves VAPID; no hace falta un proyecto de Firebase para esto.</p>" },
+{ t: "push", n: 3, q: "¿Qué son las llaves VAPID y qué datos tiene una suscripción?",
+  a: "<p>VAPID es un par de llaves del servidor: la pública se entrega al navegador al suscribirse y la privada firma cada envío, así el servicio push sabe quién manda. La suscripción trae <code>endpoint</code> (dirección única del navegador), <code>p256dh</code> (llave pública del navegador para cifrar) y <code>auth</code> (secreto de autenticación).</p>" },
+{ t: "push", n: 3, q: "¿Puede Google (u otro servicio push) leer el contenido de la notificación?",
+  a: "<p>No. El payload va cifrado extremo a extremo entre el servidor y el navegador (ECDH con <code>p256dh</code> y <code>auth</code>). El servicio push solo transporta bytes cifrados.</p>" },
+{ t: "push", n: 2, q: "¿En qué se diferencia Web Push de FCM en la app?",
+  a: "<p>Web Push es para navegadores y usa suscripciones. En la app (WebView nativo) no existe, así que se usa <strong>FCM por token de dispositivo</strong> con el plugin de Capacitor y <code>firebase-admin</code> en la API. Son dos canales independientes y <code>NotificacionesService</code> dispara ambos.</p>" },
+{ t: "push", n: 3, q: "¿Por qué configuran prioridad HIGH y un canal de importancia alta en Android?",
+  a: "<p>Sin <code>AndroidConfig</code>, FCM manda con prioridad normal y el modo Doze retrasa esos mensajes, a veces minutos. Sin un canal de importancia alta, Android 8+ la deja en el canal por defecto («Miscellaneous») y llega callada. El canal <code>petcore_alertas</code> se crea al abrir la app y su id coincide en la API y en el <code>AndroidManifest</code>.</p>" },
+{ t: "push", n: 3, q: "¿Cómo limpian suscripciones o tokens que ya no sirven?",
+  a: "<p>Cuando el envío responde 404 o 410 (Web Push) o <code>UNREGISTERED</code> (FCM), la API borra esa fila. Es el dispositivo diciendo que esa suscripción ya no existe (permiso revocado, app desinstalada o token rotado).</p>" },
+{ t: "push", n: 3, q: "Dos empleados comparten la PC de recepción. ¿Cómo funciona la suscripción?",
+  a: "<p>La suscripción es del navegador, no de la persona. La unicidad es el par (endpoint, dueño): cada empleado tiene su fila con el mismo endpoint. Al cerrar sesión solo se borra la fila de quien sale, y la suscripción real del navegador se cancela únicamente si ya no queda nadie más.</p>" },
+{ t: "push", n: 3, q: "¿Cómo se abre la pantalla correcta al tocar una notificación en la app?",
+  a: "<p>El mensaje FCM lleva un campo <code>enlace</code> con un <strong>código</strong> (por ejemplo <code>CITAS</code>), no una URL. El evento <code>pushNotificationActionPerformed</code> lo traduce con el mapa <code>DESTINO_POR_ENLACE</code> —el mismo que usa la campanita— y navega a esa página.</p>" },
+
+/* ============ ASYNC Y POOLS ============ */
+{ t: "async", n: 2, q: "¿Qué hace <code>@Async</code> y por qué no basta con ponerla?",
+  a: "<p>Hace que Spring ejecute el método en otro hilo, pero a través de un <strong>proxy</strong>, y necesita <code>@EnableAsync</code>. Si el método se llama desde la misma clase no pasa por el proxy y corre síncrono. Además hay que tener en cuenta que corre en otro hilo y otra transacción: las relaciones lazy deben resolverse antes de lanzarlo.</p>" },
+{ t: "async", n: 3, q: "¿Para qué existe <code>DespachadorAsincrono</code>?",
+  a: "<p>Para esquivar la limitación del proxy: es un bean separado con un único método <code>@Async ejecutar(Runnable)</code>. Cualquier servicio le pasa una lambda y esa lambda corre en otro hilo, aunque el código que la define esté en la misma clase que lo llama.</p>" },
+{ t: "async", n: 3, q: "¿Qué problema evitan al resolver el id del propietario antes de lanzar la tarea asíncrona?",
+  a: "<p>La <code>LazyInitializationException</code>: la entidad pertenece a una sesión de Hibernate que se cierra al terminar la petición, y tocar una relación lazy desde otro hilo después de eso falla. Se convierte a un <code>Long</code> plano dentro de la transacción y ese valor sí viaja seguro al otro hilo.</p>" },
+{ t: "async", n: 3, q: "¿Cuánto alivia realmente lo asíncrono?",
+  a: "<p>Reduce la <strong>latencia percibida</strong> y libera hilos de Tomcat antes (son 30), pero no reduce el trabajo total: los mismos inserts y las mismas llamadas de red ocurren. Al crear una cita ya no se espera a tres notificaciones y sus push. Contra la base de datos incluso suma contención, porque esos hilos usan las mismas 8 conexiones.</p>" },
+{ t: "async", n: 3, q: "Hay 30 hilos de Tomcat y solo 8 conexiones de base de datos. ¿Qué pasa en un pico?",
+  a: "<p>Los hilos que necesitan conexión esperan en la cola de Hikari hasta 30 segundos (<code>connection-timeout</code>); las peticiones que no entran en los 30 hilos esperan en la cola de 20 de Tomcat y, pasada esa, se rechazan. Las 8 conexiones son el techo real de rendimiento y compiten peticiones, tareas asíncronas y las dos tareas de cada minuto.</p>" },
+{ t: "async", n: 3, q: "¿Qué pasa con las tareas asíncronas pendientes si el servidor se reinicia?",
+  a: "<p>Se pierden: la cola está en memoria y no hay reintento ni persistencia. Por eso las notificaciones ya guardadas en base de datos (la campanita) no dependen de ello: el aviso en vivo es un complemento. Para entrega garantizada haría falta una tabla de salida (outbox) o una cola con reintentos.</p>" },
+{ t: "async", n: 3, q: "¿Cómo procesan un trabajo largo, como un lote de asistencias, sin bloquear la petición?",
+  a: "<p><code>AsistenciaLoteTrabajos</code> valida de inmediato, crea un <code>jobId</code> con estado <code>PROCESANDO</code>, lo despacha a un hilo y devuelve el resumen. Al terminar actualiza el estado (<code>TERMINADO</code> o <code>ERROR</code>) y difunde <code>ASISTENCIA_LOTE_TERMINADO</code> por WebSocket. El cliente también puede consultarlo por <code>jobId</code>. El mapa se limpia a los 30 minutos.</p>" },
+
+/* ============ RENDIMIENTO ============ */
+{ t: "rendimiento", n: 2, q: "¿Qué es el problema N+1 y cómo apareció en este proyecto?",
+  a: "<p>Una consulta trae N filas y luego, al convertir cada una a DTO, se toca una relación lazy que lanza una consulta por fila: 1 + N. Apareció al pasar las entidades a <code>LAZY</code> (de forma gradual, módulo por módulo): los <code>convertirADTO</code> leían relaciones fila por fila.</p>" },
+{ t: "rendimiento", n: 3, q: "¿Por qué no usar <code>EAGER</code> para evitar el N+1?",
+  a: "<p><code>EAGER</code> carga la relación <strong>siempre</strong>, en cada consulta, aunque no se use, y arrastra cadenas enteras de entidades. Es más difícil de controlar y consume más memoria. Lo correcto es <code>LAZY</code> en el mapeo y decidir en cada consulta cómo traer lo que hace falta.</p>" },
+{ t: "rendimiento", n: 3, q: "Diferencia entre <code>JOIN FETCH</code>, <code>@EntityGraph</code> y el batch fetch. ¿Cuándo cada uno?",
+  a: "<p><code>JOIN FETCH</code> y <code>@EntityGraph</code> traen la relación en <strong>la misma consulta</strong> con un <code>JOIN</code>; el primero va escrito en JPQL, el segundo es declarativo sobre un método. Se usan para relaciones a-uno conocidas de antemano.</p><p>El batch fetch (<code>default_batch_fetch_size=50</code>) deja la relación lazy pero la carga <strong>por lotes</strong> con <code>IN (...)</code>: de N consultas pasa a N/50. Es lo que se usa para colecciones (como <code>serviciosCita</code>), donde un JOIN multiplicaría filas.</p>" },
+{ t: "rendimiento", n: 3, q: "¿Por qué no se hace <code>JOIN FETCH</code> de una colección en una consulta paginada?",
+  a: "<p>Porque el JOIN multiplica las filas de la tabla principal y la paginación de la base de datos ya no corresponde a entidades: Hibernate termina paginando en memoria. Para colecciones con paginación se usa el batch fetch, que mantiene la consulta principal paginada limpia.</p>" },
+{ t: "rendimiento", n: 3, q: "¿Por qué cuentan con una consulta agrupada en bloques de 500?",
+  a: "<p>Antes se cargaba la colección de líneas de cada venta solo para hacer <code>.size()</code>: una consulta por venta (el listado de unas 500 ventas pasaba de 28 s). Ahora una sola consulta <code>COUNT … GROUP BY</code> devuelve todos los conteos. Los ids van en bloques de 500 porque el <code>IN</code> de Oracle admite como máximo 1.000 elementos (<code>ORA-01795</code>).</p>" },
+{ t: "rendimiento", n: 3, q: "¿Cómo logran buen rendimiento en un Eco dyno de 512 MB?",
+  a: "<p>Cada petición toca poco: relaciones lazy, listas paginadas con tamaño máximo 50, resúmenes por <code>COUNT</code>/<code>SUM</code> sin cargar entidades, pools pequeños (Tomcat 30, Hikari 8), JWT en la cookie sin sesiones en memoria, WebSocket en lugar de polling y trabajo secundario fuera del hilo de la petición. Con eso el consumo de memoria por petición es bajo.</p>" },
+{ t: "rendimiento", n: 3, q: "El Eco dyno se duerme a los 30 minutos. ¿Cómo lo manejan?",
+  a: "<p>La primera petición despierta la JVM y abre conexiones a Oracle, y puede responder 502, 503 o 504. El frontend reintenta las lecturas con esperas de 1,5, 3, 5 y 8 segundos (unos 17,5 s en total, por debajo de los 30 s que tolera Heroku) antes de dar la API por caída. Además la API precalienta Firebase al arrancar y cierra citas pasadas al iniciar.</p>" },
+{ t: "rendimiento", n: 3, q: "¿Qué es <code>open-in-view</code> y por qué importa para el N+1?",
+  a: "<p>Mantiene la sesión de Hibernate abierta hasta que se serializa la respuesta, lo que permite cargas lazy «tardías» en el controller o al convertir a JSON. Es cómodo, pero puede ocultar un N+1 porque nada falla: simplemente hay más consultas. En este proyecto no está configurado, así que rige el valor por defecto de Spring Boot.</p>" },
+
+/* ============ APP E iOS ============ */
+{ t: "app", n: 2, q: "¿Qué es Capacitor y cómo se relaciona con el portal web?",
+  a: "<p>Capacitor empaqueta una web (HTML, CSS y JS) como app nativa dentro de un WebView y da acceso a funciones del dispositivo mediante plugins (push, archivos, compartir, barra de estado, login de Google). La app de propietarios es la misma base web, con páginas propias, empaquetada para Android e iOS.</p>" },
+{ t: "app", n: 3, q: "¿Por qué la cookie de sesión no viajaba en iOS y qué lo resolvió?",
+  a: "<p>La app vive en un origen (<code>capacitor://localhost</code>) distinto del de la API, y <code>WKWebView</code> bloquea las cookies de terceros. Se activó <code>CapacitorHttp</code> (las peticiones salen por la red nativa) y <code>CapacitorCookies</code> (almacén nativo de cookies), se puso <code>iosScheme: \"https\"</code> y la API agregó <code>capacitor://localhost</code> y <code>https://localhost</code> a sus orígenes permitidos.</p>" },
+{ t: "app", n: 3, q: "¿Por qué convirtieron la verificación de sesión de XHR síncrono a <code>fetch</code> asíncrono?",
+  a: "<p>El puente nativo de Capacitor es asíncrono, así que un <strong>XHR síncrono lo esquiva</strong>: en iOS nunca llevaba la cookie y la app veía «sin sesión», expulsando al usuario justo después de iniciar sesión. La solución fue crear versiones <code>fetch</code> (<code>verificarSesionAsync</code>) y volver asíncronos <code>requerirSesion()</code> y <code>obtenerSesion()</code>, con <code>await</code> en unos quince controladores.</p>" },
+{ t: "app", n: 3, q: "«Cerrar sesión» no hacía nada en iOS. ¿Por qué y cómo lo corrigieron?",
+  a: "<p>La cookie <code>httpOnly</code> a veces no se borraba con el <code>Set-Cookie</code> del logout, así que <code>login.html</code> la veía válida y mandaba al dashboard. Se agregó una marca local (<code>pc_cierre_sesion</code>) que se escribe antes de llamar al servidor y se respeta aunque la cookie siga ahí, más una limpieza explícita de las cookies nativas con <code>CapacitorCookies</code>, y <code>location.replace</code> para que «atrás» no vuelva a una página protegida.</p>" },
+{ t: "app", n: 2, q: "¿Qué orígenes necesita la API para aceptar a la app?",
+  a: "<p><code>https://localhost</code> para Android y <code>capacitor://localhost</code> para iOS, tanto en el CORS de REST como en los orígenes permitidos del WebSocket. Con <code>iosScheme: \"https\"</code> el origen de iOS se parece al de Android.</p>" },
+{ t: "app", n: 3, q: "¿Está configurado el push en iOS?",
+  a: "<p>El plugin de push está incluido en el paquete de Swift, pero para que funcione hace falta la configuración de APNs: archivo <code>GoogleService-Info.plist</code>, <em>entitlements</em> con <code>aps-environment</code> y la clave de APNs cargada en Firebase. Hoy el canal verificado de punta a punta es Android.</p>" },
+
+/* ============ CONCURRENCIA ============ */
+{ t: "concurrencia", n: 2, q: "¿Qué es ACID y dónde se ve en el proyecto?",
+  a: "<p>Atomicidad (todo o nada), consistencia (las reglas siempre se cumplen), aislamiento (transacciones concurrentes no se ven a medias) y durabilidad (lo confirmado persiste). Se ve en cada <code>@Transactional</code>: crear una compra con sus líneas, o una venta con su descuento de stock y su kardex, es una unidad que se confirma o se revierte completa.</p>" },
+{ t: "concurrencia", n: 3, q: "Dos cajeros venden la última unidad a la vez. ¿Qué pasa?",
+  a: "<p>La validación de Java lee el stock y compara, sin bloquear, así que las dos pueden pasar. Pero el trigger descuenta con una resta relativa (<code>stock = stock - :n</code>), Oracle bloquea la fila y serializa las dos transacciones; la segunda ve stock 0 y la restricción <code>CHECK (PROD_STOCK_DISPONIBLE &gt;= 0)</code> la rechaza y la revierte. El stock nunca queda negativo; el perdedor recibe un 409.</p>" },
+{ t: "concurrencia", n: 3, q: "¿Qué es una actualización perdida y dónde podría ocurrir aquí?",
+  a: "<p>Dos clientes leen el mismo valor, cada uno calcula el suyo y escribe: gana el último y se pierde el otro. Podría ocurrir en el ingreso de stock, donde el navegador calcula <code>stock + cantidad</code> a partir de un valor leído antes y manda el absoluto por <code>PUT</code>: si entremedias hubo una venta, se pisa. El arreglo es que el servidor haga la suma atómica (<code>stock = stock + :n</code>) o usar bloqueo optimista.</p>" },
+{ t: "concurrencia", n: 3, q: "Bloqueo optimista o pesimista, ¿cuál usarías aquí?",
+  a: "<p><strong>Optimista</strong> (<code>@Version</code>) para pantallas de edición, donde el conflicto es raro y es mejor avisar «alguien modificó este registro». <strong>Pesimista</strong> (<code>SELECT … FOR UPDATE</code>) o, mejor, un <code>UPDATE</code> atómico para contadores calientes como el stock, donde el conflicto es frecuente y el costo de reintentar sería alto.</p>" },
+{ t: "concurrencia", n: 3, q: "Si la base de datos ya protege el stock, ¿para qué validan en Java?",
+  a: "<p>Para la experiencia: el mensaje «Stock insuficiente de X: disponible 3, solicitado 5» es claro, mientras que la violación de la restricción llega como un 409 técnico. La validación evita casi todos los errores comunes; la restricción garantiza la verdad en el caso de carrera.</p>" },
+{ t: "concurrencia", n: 3, q: "¿Qué nivel de aislamiento usa Oracle por defecto y qué permite?",
+  a: "<p><code>READ COMMITTED</code>: no hay lecturas sucias, pero sí lecturas no repetibles y fantasmas. Oracle usa multiversión (MVCC): los lectores no bloquean a los escritores y cada consulta ve los datos confirmados al empezar. Por eso un <em>check-then-act</em> sin bloqueo es vulnerable y se apoya en restricciones.</p>" },
+{ t: "concurrencia", n: 3, q: "¿Qué es la idempotencia y qué pasa si el usuario hace doble clic en «Guardar»?",
+  a: "<p>Una operación es idempotente si repetirla no cambia el resultado. Los POST no lo son: dos envíos crearían dos registros. El frontend mitiga deshabilitando el botón mientras viaja la petición y las restricciones UNIQUE frenan duplicados naturales (comprobante, factura por proveedor). Una solución completa es una clave de idempotencia por operación.</p>" },
+{ t: "concurrencia", n: 3, q: "¿Por qué la capacidad de hospitalización la valida un trigger y no solo la API?",
+  a: "<p>Porque la regla debe cumplirse sin importar quién inserte, no solo por la API. Pero un trigger que cuenta y compara también es un <em>check-then-act</em>: dos ingresos simultáneos para la última cama podrían pasar ambos sin un bloqueo adicional. La API también valida la capacidad (<code>validarCapacidad</code>) para dar un mensaje claro.</p>" }
+];
+
+/* ---------------------------------------------------------------- estado y utilidades */
+var CLAVE = "petcore_guia_dominadas_v1";
+var dominadas = {};
+try { dominadas = JSON.parse(localStorage.getItem(CLAVE) || "{}") || {}; } catch (e) { dominadas = {}; }
+function guardar() { try { localStorage.setItem(CLAVE, JSON.stringify(dominadas)); } catch (e) { /* sin almacenamiento */ } }
+
+var filtroTema = "todos", filtroNivel = 0, texto = "";
+var lista = document.getElementById("listaQ");
+var elementos = [];
+
+function textoPlano(html) { var d = document.createElement("div"); d.innerHTML = html; return (d.textContent || "").toLowerCase(); }
+
+QA.forEach(function (item, i) {
+  item.id = "q" + (i + 1);
+  item.buscable = (textoPlano(item.q) + " " + textoPlano(item.a) + " " + TEMAS[item.t].toLowerCase());
+});
+
+function construir() {
+  lista.innerHTML = "";
+  elementos = QA.map(function (item) {
+    var d = document.createElement("details");
+    d.className = "q" + (dominadas[item.id] ? " dominada" : "");
+    d.id = item.id;
+    var s = document.createElement("summary");
+    s.innerHTML = '<span class="nivel n' + item.n + '">' + NIVELES[item.n] + '</span>' +
+      '<span class="qtxt">' + item.q + '<span class="tema-tag">' + TEMAS[item.t] + '</span></span>';
+    var r = document.createElement("div");
+    r.className = "resp";
+    r.innerHTML = item.a;
+    var pie = document.createElement("div");
+    pie.className = "pie-q";
+    var b = document.createElement("button");
+    b.type = "button"; b.className = "btn"; b.id = "btn-" + item.id;
+    function pintarBoton() { b.textContent = dominadas[item.id] ? "Quitar de dominadas" : "Marcar como dominada"; }
+    pintarBoton();
+    b.addEventListener("click", function () {
+      if (dominadas[item.id]) delete dominadas[item.id]; else dominadas[item.id] = 1;
+      guardar(); d.classList.toggle("dominada", !!dominadas[item.id]); pintarBoton(); actualizarProgreso();
+    });
+    pie.appendChild(b);
+    r.appendChild(pie);
+    d.appendChild(s); d.appendChild(r);
+    lista.appendChild(d);
+    return { item: item, el: d };
+  });
+}
+
+function aplicarFiltros() {
+  var q = texto.trim().toLowerCase();
+  var visibles = 0;
+  elementos.forEach(function (o) {
+    var ok = (filtroTema === "todos" || o.item.t === filtroTema) &&
+             (filtroNivel === 0 || o.item.n === filtroNivel) &&
+             (!q || o.item.buscable.indexOf(q) !== -1);
+    o.el.hidden = !ok;
+    if (ok) visibles++;
+  });
+  document.getElementById("contador").textContent = visibles + " de " + QA.length + " preguntas";
+  document.getElementById("vacio").hidden = visibles !== 0;
+}
+
+function actualizarProgreso() {
+  var n = Object.keys(dominadas).filter(function (k) { return QA.some(function (x) { return x.id === k; }); }).length;
+  document.getElementById("progresoTexto").textContent = n + " de " + QA.length + " dominadas";
+  document.getElementById("progresoBarra").style.width = (QA.length ? (n / QA.length) * 100 : 0) + "%";
+}
+
+function chips(contenedorId, opciones, actual, alElegir) {
+  var cont = document.getElementById(contenedorId);
+  cont.innerHTML = "";
+  opciones.forEach(function (op) {
+    var c = document.createElement("button");
+    c.type = "button"; c.className = "chip"; c.textContent = op.texto;
+    c.setAttribute("aria-pressed", String(op.valor === actual()));
+    c.addEventListener("click", function () {
+      alElegir(op.valor);
+      Array.prototype.forEach.call(cont.children, function (h, i) { h.setAttribute("aria-pressed", String(opciones[i].valor === actual())); });
+      aplicarFiltros();
+    });
+    cont.appendChild(c);
+  });
+}
+
+var opcionesTema = [{ valor: "todos", texto: "Todos" }].concat(Object.keys(TEMAS).map(function (k) { return { valor: k, texto: TEMAS[k] }; }));
+var opcionesNivel = [{ valor: 0, texto: "Todos" }, { valor: 1, texto: "Básica" }, { valor: 2, texto: "Media" }, { valor: 3, texto: "Pesada" }];
+
+construir();
+chips("chipsTema", opcionesTema, function () { return filtroTema; }, function (v) { filtroTema = v; });
+chips("chipsNivel", opcionesNivel, function () { return filtroNivel; }, function (v) { filtroNivel = v; });
+aplicarFiltros();
+actualizarProgreso();
+
+document.getElementById("buscar").addEventListener("input", function (e) { texto = e.target.value; aplicarFiltros(); });
+
+var todasAbiertas = false;
+document.getElementById("btnAbrir").addEventListener("click", function () {
+  todasAbiertas = !todasAbiertas;
+  elementos.forEach(function (o) { if (!o.el.hidden) o.el.open = todasAbiertas; });
+  this.textContent = todasAbiertas ? "Cerrar todas" : "Abrir todas";
+});
+
+document.getElementById("btnAzar").addEventListener("click", function () {
+  var candidatas = elementos.filter(function (o) { return !o.el.hidden && !dominadas[o.item.id]; });
+  if (!candidatas.length) candidatas = elementos.filter(function (o) { return !o.el.hidden; });
+  if (!candidatas.length) return;
+  elementos.forEach(function (o) { o.el.open = false; });
+  var elegida = candidatas[Math.floor(Math.random() * candidatas.length)];
+  elegida.el.open = true;
+  elegida.el.scrollIntoView({ behavior: "smooth", block: "start" });
+});
+
+document.getElementById("btnReiniciar").addEventListener("click", function () {
+  dominadas = {}; guardar();
+  elementos.forEach(function (o) {
+    o.el.classList.remove("dominada");
+    var b = document.getElementById("btn-" + o.item.id);
+    if (b) b.textContent = "Marcar como dominada";
+  });
+  actualizarProgreso();
+});
+
+/* ---------------------------------------------------------------- tema claro/oscuro */
+var CLAVE_TEMA = "petcore_guia_tema";
+var temaActual = "auto";
+try { temaActual = localStorage.getItem(CLAVE_TEMA) || "auto"; } catch (e) { temaActual = "auto"; }
+function aplicarTema() {
+  var raiz = document.documentElement;
+  if (temaActual === "auto") raiz.removeAttribute("data-theme"); else raiz.setAttribute("data-theme", temaActual);
+  document.getElementById("btnTema").textContent = "Tema: " + (temaActual === "auto" ? "auto" : temaActual === "dark" ? "oscuro" : "claro");
+}
+document.getElementById("btnTema").addEventListener("click", function () {
+  temaActual = temaActual === "auto" ? "light" : temaActual === "light" ? "dark" : "auto";
+  try { localStorage.setItem(CLAVE_TEMA, temaActual); } catch (e) { /* ignorar */ }
+  aplicarTema();
+});
+aplicarTema();
+
+/* ---------------------------------------------------------------- índice: sección actual */
+var enlaces = Array.prototype.slice.call(document.querySelectorAll(".indice a"));
+var secciones = enlaces.map(function (a) { return document.querySelector(a.getAttribute("href")); });
+function marcarActual() {
+  var y = window.scrollY + 120, idx = 0;
+  secciones.forEach(function (s, i) { if (s && s.offsetTop <= y) idx = i; });
+  enlaces.forEach(function (a, i) { a.classList.toggle("actual", i === idx); });
+}
+window.addEventListener("scroll", marcarActual, { passive: true });
+marcarActual();
+</script>
+</body>
+</html>
